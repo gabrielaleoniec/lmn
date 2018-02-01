@@ -2,16 +2,79 @@
   * Created on : 2018-02-01, 12:45:01
   * Author     : Gabriela Leoniec <gabriela.leoniec@gmail.com>
 **/
-body {
+html {
   font-family: 'Open Sans', Arial, sans-serif;
-  font-size: 14px; }
+  font-size: 87.5%;
+  font-weight: bold; }
 
-.hotels {
-  background-color: #fff; }
-  .hotels__header {
+.section {
+  background: #fff url("/mobile_test.jpg") no-repeat top left; }
+  .section__header {
+    padding: 10px;
+    padding: 0.71429rem;
+    font-size: 25px;
+    font-size: 1.78571rem;
     background-color: #db4a8f;
-    color: #fff; }
-  .hotels__list {
-    background-color: #f5f5f5; }
-  .hotels__hotel {
-    background-color: #f5f5f5; }
+    color: #fff;
+    line-height: 1;
+    margin: 0;
+    text-align: center; }
+
+.hotels__list {
+  display: block;
+  margin: 0;
+  padding: 0; }
+
+.hotels__hotel {
+  padding: 13px 18px 11px 14px;
+  padding: 0.92857rem 1.28571rem 0.78571rem 1rem;
+  background-color: #f5f5f5;
+  display: flex;
+  justify-content: center; }
+
+.list__element {
+  font-size: 18px;
+  font-size: 1.28571rem;
+  padding: 22px 10px 17px;
+  padding: 1.57143rem 0.71429rem 1.21429rem;
+  background: #f5f5f5 linear-gradient(180deg, #fff 0, #e7e7e7 100%);
+  border-bottom: 1px solid #9b9b9b;
+  border-top: 1px solid #b3b3b3;
+  display: block;
+  line-height: 1;
+  list-style-type: none;
+  margin: 0; }
+  .list__element:first-of-type {
+    border-top-width: 0; }
+
+.hotel__image {
+  height: 105px;
+  height: 7.5rem;
+  margin-right: 6px;
+  margin-right: 0.42857rem;
+  width: 124px;
+  width: 8.85714rem;
+  background-color: #e7e7e7; }
+
+.hotel__details {
+  position: relative; }
+
+.hotel__name {
+  font-size: 12px;
+  font-size: 0.85714rem;
+  display: block;
+  margin: 0;
+  padding: 0; }
+
+.hotel__price {
+  bottom: 0;
+  position: absolute;
+  right: 0; }
+
+.price__value {
+  color: #db4a8f; }
+
+.price__info {
+  font-size: 10px;
+  font-size: 0.71429rem;
+  color: #666; }

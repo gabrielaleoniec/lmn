@@ -44,7 +44,7 @@ gulp.task('sasslint', function () {
 });
  
 gulp.task('sass', ['sasslint'], function () {
-  return gulp.src(dir_sass+'**/*.s+(a|c)ss')
+  return gulp.src(dir_sass+'*.s+(a|c)ss')
     .pipe(sass().on('error', sass.logError))
     .pipe(gulp.dest(dir_css));
 });

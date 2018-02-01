@@ -7,26 +7,103 @@
 $c-pink: #db4a8f;
 $c-white: #fff;
 $c-grey: #f5f5f5;
+$c-grey1: #e7e7e7;
+$c-grey2: #9b9b9b;
+$c-grey3: #b3b3b3;
+$c-grey4: #666;
 
-body {
+@import 'utils/utlis';
+
+html {
   // Copied from the lastminute.com website
   font-family: 'Open Sans', Arial, sans-serif;
-  font-size: 14px;
+  font-size: 87.5%; // defaults to 14px
+  font-weight: bold;
+}
+
+.section {
+  background: $c-white url('/mobile_test.jpg') no-repeat top left;
+
+  &__header {
+    @include rem(padding, 10px);
+    @include rem(font-size, 25px);
+    background-color: $c-pink;
+    color: $c-white;
+    line-height: 1;
+    margin: 0;
+    text-align: center;
+  }
 }
 
 .hotels {
-  background-color: $c-white;
-
-  &__header {
-    background-color: $c-pink;
-    color: $c-white;
-  }
-
+  //background-color: $c-white;
+  
   &__list {
-    background-color: $c-grey;
+    //background-color: $c-grey;
+    display: block;
+    margin: 0;
+    padding: 0;
   }
 
   &__hotel {
+    @include rem(padding, 13px 18px 11px 14px);
     background-color: $c-grey;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.list {
+  &__element {
+    @include rem(font-size, 18px);
+    @include rem(padding, 22px 10px 17px);
+    background: $c-grey linear-gradient(180deg, $c-white 0, $c-grey1 100%);
+    border-bottom: 1px solid $c-grey2;
+    border-top: 1px solid $c-grey3;
+    display: block;
+    line-height: 1;
+    list-style-type: none;
+    margin: 0;
+
+    &:first-of-type {
+      border-top-width: 0;
+    }
+  }
+}
+
+.hotel {
+  &__image {
+    @include rem(height, 105px);
+    @include rem(margin-right, 6px);
+    @include rem(width, 124px);
+    background-color: $c-grey1;
+  }
+
+  &__details {
+    position: relative;
+  }
+
+  &__name {
+    @include rem(font-size, 12px);
+    display: block;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__price {
+    bottom: 0;
+    position: absolute;
+    right: 0;
+  }
+}
+
+.price {
+  &__value {
+    color: $c-pink;
+  }
+
+  &__info {
+    @include rem(font-size, 10px);
+    color: $c-grey4;
   }
 }
