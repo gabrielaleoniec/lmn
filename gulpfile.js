@@ -31,22 +31,26 @@ fs.lstat(dir_css, (err) => {
 gulp.task('sasslint', function () {
   return gulp.src(dir_sass+'**/*.s+(a|c)ss')
     .pipe(sassLint({
-			rules: {
-				
-			}
+			/*rules: {
+				'class-name-format': {
+          'allow-leading-underscore': false,
+          'convention': 'camelcase'
+        }
+			},*/
+      configFile: './sass-lint.yml'
 		}))
     .pipe(sassLint.format())
     .pipe(sassLint.failOnError());
 });
  
 gulp.task('sass', ['sasslint'], function () {
-  return gulp.src(dir_sass+'**/*.scss')
+  return gulp.src(dir_sass+'**/*.s+(a|c)ss')
     .pipe(sass().on('error', sass.logError))
     .pipe(gulp.dest(dir_css));
 });
 
 gulp.task('sass:watch', function () {
-  gulp.watch(dir_sass+'**/*.sass', ['sass']);
+  gulp.watch(dir_sass+'**/*.s+(a|c)ss', ['sass']);
 });
 
 

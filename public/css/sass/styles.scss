@@ -1,5 +1,32 @@
 /*! 
-	* Created on : 2018-02-01, 12:45:01
-	* Author     : Gabriela Leoniec <gabriela.leoniec@gmail.com>
+  * Created on : 2018-02-01, 12:45:01
+  * Author     : Gabriela Leoniec <gabriela.leoniec@gmail.com>
 **/
 
+// colors
+$c-pink: #db4a8f;
+$c-white: #fff;
+$c-grey: #f5f5f5;
+
+body {
+  // Copied from the lastminute.com website
+  font-family: 'Open Sans', Arial, sans-serif;
+  font-size: 14px;
+}
+
+.hotels {
+  background-color: $c-white;
+
+  &__header {
+    background-color: $c-pink;
+    color: $c-white;
+  }
+
+  &__list {
+    background-color: $c-grey;
+  }
+
+  &__hotel {
+    background-color: $c-grey;
+  }
+}

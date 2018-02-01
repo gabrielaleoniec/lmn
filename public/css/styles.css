@@ -1,4 +1,17 @@
 /*! 
-	* Created on : 2018-02-01, 12:45:01
-	* Author     : Gabriela Leoniec <gabriela.leoniec@gmail.com>
+  * Created on : 2018-02-01, 12:45:01
+  * Author     : Gabriela Leoniec <gabriela.leoniec@gmail.com>
 **/
+body {
+  font-family: 'Open Sans', Arial, sans-serif;
+  font-size: 14px; }
+
+.hotels {
+  background-color: #fff; }
+  .hotels__header {
+    background-color: #db4a8f;
+    color: #fff; }
+  .hotels__list {
+    background-color: #f5f5f5; }
+  .hotels__hotel {
+    background-color: #f5f5f5; }
