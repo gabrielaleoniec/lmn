@@ -3,3 +3,5 @@ node_modules/
 *.iml
 /package-lock.json
 /nbproject/
+/nbproject/project.xml
+/nbproject/project.properties
