@@ -2,8 +2,32 @@
   @return $n / ($n * 0 + 1);
 }
 
+// Hiding elements
+@mixin off-screen {
+  height: 0;
+  left: -300000px;
+  margin-bottom: 0;
+  margin-left: -300000px;
+  margin-top: 0;
+}
+
+@mixin for-size($range) {
+  $tiny-upper-boundary: 320px;
+  $phone-upper-boundary: 640px;
+
+  @if $range == tiny-down {
+    @media (max-width: $tiny-upper-boundary - 1) { @content; }
+  } @else if $range == tiny-up {
+    @media (min-width: $tiny-upper-boundary) { @content; }
+  } @else if $range == tablet-landscape-up {
+    @media (min-width: $phone-upper-boundary) { @content; }
+  }
+}
+
+
+// Changing units to rem/px accordingly
 @mixin rem($property, $values) {
-  $font-base: 14;
+  $font-base: 10;
   $px: ();
   $rem: ();
 

@@ -13,7 +13,7 @@ module.exports = {
         return {
           id: id,
           name: detailedHotels[id].name
-        }
+        };
       });
     res.status(200).send(hotels);
   }

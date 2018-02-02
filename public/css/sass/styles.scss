@@ -4,40 +4,54 @@
 **/
 
 // colors
-$c-pink: #db4a8f;
+$c-pink: #db4a8f;//#ec008c
+$c-pink1: #a46786;//#ec008c
 $c-white: #fff;
-$c-grey: #f5f5f5;
+$c-grey: #eee;
 $c-grey1: #e7e7e7;
 $c-grey2: #9b9b9b;
 $c-grey3: #b3b3b3;
 $c-grey4: #666;
+$c-grey5: #b1b2b4;
 
 @import 'utils/utlis';
 
 html {
   // Copied from the lastminute.com website
   font-family: 'Open Sans', Arial, sans-serif;
-  font-size: 87.5%; // defaults to 14px
+  font-size: 62.5%; // defaults to 10px
   font-weight: bold;
+}
+
+.off-screen {
+  @include off-screen;
 }
 
 .section {
   background: $c-white url('/mobile_test.jpg') no-repeat top left;
 
   &__header {
-    @include rem(padding, 10px);
+    @include for-size('tiny-up') {
+      background-size: auto;
+    }
     @include rem(font-size, 25px);
-    background-color: $c-pink;
+    @include rem(padding, 10px);
+    background: $c-pink url('/lmn-logo-white.svg') no-repeat center; //TODO: set the url to a micro service
+    background-size: 90% 24px;
+    border-bottom: 1px solid $c-pink1;
+    box-shadow: 0 2px 2px 0 $c-grey5;
     color: $c-white;
     line-height: 1;
     margin: 0;
+    //opacity: .5; //TODO: remove
     text-align: center;
   }
 }
 
 .hotels {
   //background-color: $c-white;
-  
+  //opacity: .6; //TODO: remove
+
   &__list {
     //background-color: $c-grey;
     display: block;
@@ -46,6 +60,9 @@ html {
   }
 
   &__hotel {
+    @include for-size('tiny-down') {
+      flex-wrap: wrap;
+    }
     @include rem(padding, 13px 18px 11px 14px);
     background-color: $c-grey;
     display: flex;
@@ -56,7 +73,7 @@ html {
 .list {
   &__element {
     @include rem(font-size, 18px);
-    @include rem(padding, 22px 10px 17px);
+    @include rem(padding, 20px 10px 15px);
     background: $c-grey linear-gradient(180deg, $c-white 0, $c-grey1 100%);
     border-bottom: 1px solid $c-grey2;
     border-top: 1px solid $c-grey3;
@@ -74,36 +91,60 @@ html {
 .hotel {
   &__image {
     @include rem(height, 105px);
-    @include rem(margin-right, 6px);
     @include rem(width, 124px);
     background-color: $c-grey1;
   }
 
   &__details {
-    position: relative;
+    @include for-size('tiny-up') {
+      @include rem(margin, 0 6px);
+      position: relative;
+    }
+
+    @include for-size('tiny-down') {
+      @include rem(margin-top, 1rem);
+      text-align: center;
+    }
   }
 
   &__name {
-    @include rem(font-size, 12px);
+    @include rem(font-size, 16px);
     display: block;
     margin: 0;
     padding: 0;
+
+    &::after {
+      @include for-size('tiny-down') {
+        background-position-x: center;
+      }
+      @include rem(height, 14px);
+
+      background: url('/ratings.png') no-repeat left top;
+      content: '';
+      display: block;
+      width: 100%;
+    }
   }
 
   &__price {
-    bottom: 0;
-    position: absolute;
-    right: 0;
+    @include for-size('tiny-up') {
+      @include rem(bottom, -9px);
+      @include rem(right, -11px);
+      position: absolute;
+    }
+    @include rem(margin-top, 1rem);
   }
 }
 
 .price {
   &__value {
+    @include rem(font-size, 24px);
     color: $c-pink;
+    line-height: 1;
   }
 
   &__info {
-    @include rem(font-size, 10px);
+    @include rem(font-size, 12px);
     color: $c-grey4;
   }
 }
