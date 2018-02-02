@@ -28,7 +28,7 @@ html {
 }
 
 .section {
-  background: $c-white url('/mobile_test.jpg') no-repeat top left;
+  background: $c-white url('/desktop_test.jpg') no-repeat top left;
 
   &__header {
     @include for-size('tiny-up') {
@@ -50,6 +50,10 @@ html {
 
 .hotels {
   //background-color: $c-white;
+  @include for-size('tablet-up') {
+    display: flex;
+    padding: 35px 33px 48px;
+  }
   //opacity: .6; //TODO: remove
 
   &__list {
@@ -93,6 +97,7 @@ html {
     @include rem(height, 105px);
     @include rem(width, 124px);
     background-color: $c-grey1;
+    background-size: contain;
   }
 
   &__details {

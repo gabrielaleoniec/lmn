@@ -15,7 +15,7 @@ html {
   margin-top: 0; }
 
 .section {
-  background: #fff url("/mobile_test.jpg") no-repeat top left; }
+  background: #fff url("/desktop_test.jpg") no-repeat top left; }
   .section__header {
     font-size: 25px;
     font-size: 2.5rem;
@@ -32,6 +32,11 @@ html {
     @media (min-width: 320px) {
       .section__header {
         background-size: auto; } }
+
+@media (min-width: 640px) {
+  .hotels {
+    display: flex;
+    padding: 35px 33px 48px; } }
 
 .hotels__list {
   display: block;
@@ -68,7 +73,8 @@ html {
   height: 10.5rem;
   width: 124px;
   width: 12.4rem;
-  background-color: #e7e7e7; }
+  background-color: #e7e7e7;
+  background-size: contain; }
 
 @media (min-width: 320px) {
   .hotel__details {

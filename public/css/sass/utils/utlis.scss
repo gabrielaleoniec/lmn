@@ -19,7 +19,7 @@
     @media (max-width: $tiny-upper-boundary - 1) { @content; }
   } @else if $range == tiny-up {
     @media (min-width: $tiny-upper-boundary) { @content; }
-  } @else if $range == tablet-landscape-up {
+  } @else if $range == tablet-up {
     @media (min-width: $phone-upper-boundary) { @content; }
   }
 }
