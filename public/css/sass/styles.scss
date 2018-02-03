@@ -31,9 +31,6 @@ html {
   background: $c-white url('/desktop_test.jpg') no-repeat top left;
 
   &__header {
-    @include for-size('tiny-up') {
-      background-size: auto;
-    }
     @include rem(font-size, 25px);
     @include rem(padding, 10px);
     background: $c-pink url('/lmn-logo-white.svg') no-repeat center; //TODO: set the url to a micro service
@@ -43,7 +40,7 @@ html {
     color: $c-white;
     line-height: 1;
     margin: 0;
-    //opacity: .5; //TODO: remove
+    opacity: .5; //TODO: remove
     text-align: center;
   }
 }
@@ -54,7 +51,7 @@ html {
     display: flex;
     padding: 35px 33px 48px;
   }
-  //opacity: .6; //TODO: remove
+  opacity: .6; //TODO: remove
 
   &__list {
     //background-color: $c-grey;
@@ -64,12 +61,10 @@ html {
   }
 
   &__hotel {
-    @include for-size('tiny-down') {
-      flex-wrap: wrap;
-    }
     @include rem(padding, 13px 18px 11px 14px);
     background-color: $c-grey;
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
   }
 }
@@ -101,15 +96,8 @@ html {
   }
 
   &__details {
-    @include for-size('tiny-up') {
-      @include rem(margin, 0 6px);
-      position: relative;
-    }
-
-    @include for-size('tiny-down') {
-      @include rem(margin-top, 1rem);
-      text-align: center;
-    }
+    @include rem(margin-top, 1rem);
+    text-align: center;
   }
 
   &__name {
@@ -119,12 +107,8 @@ html {
     padding: 0;
 
     &::after {
-      @include for-size('tiny-down') {
-        background-position-x: center;
-      }
       @include rem(height, 14px);
-
-      background: url('/ratings.png') no-repeat left top;
+      background: url('/ratings.png') no-repeat center top;
       content: '';
       display: block;
       width: 100%;
@@ -132,11 +116,6 @@ html {
   }
 
   &__price {
-    @include for-size('tiny-up') {
-      @include rem(bottom, -9px);
-      @include rem(right, -11px);
-      position: absolute;
-    }
     @include rem(margin-top, 1rem);
   }
 }
@@ -151,5 +130,59 @@ html {
   &__info {
     @include rem(font-size, 12px);
     color: $c-grey4;
+  }
+}
+
+@include for-size('tiny-up') {
+  .section {
+    &__header {
+      background-size: auto;
+    }
+  }
+
+  .hotels {
+    &__hotel {
+      flex-wrap: nowrap;
+    }
+  }
+
+  .hotel {
+    &__name {
+      &::after {
+        background-position-x: left;
+      }
+    }
+
+    &__details {
+      @include rem(margin, 0 6px);
+      position: relative;
+      text-align: left;
+    }
+
+    &__price {
+      @include rem(bottom, -9px);
+      @include rem(right, -11px);
+      position: absolute;
+    }
+  }
+}
+
+@include for-size('tablet-up') {
+  .hotels {
+    &__list {
+      margin-right: 3%;
+      width: 33%;
+    }
+    
+    &__hotel {
+      width: 74%;
+    }
+  }
+
+  .hotel {
+    &__image {
+      @include rem(height, 142px);
+      @include rem(width, 170px);
+    }
   }
 }

@@ -28,30 +28,26 @@ html {
     color: #fff;
     line-height: 1;
     margin: 0;
+    opacity: .5;
     text-align: center; }
-    @media (min-width: 320px) {
-      .section__header {
-        background-size: auto; } }
 
-@media (min-width: 640px) {
-  .hotels {
+.hotels {
+  opacity: .6; }
+  @media (min-width: 640px) {
+    .hotels {
+      display: flex;
+      padding: 35px 33px 48px; } }
+  .hotels__list {
+    display: block;
+    margin: 0;
+    padding: 0; }
+  .hotels__hotel {
+    padding: 13px 18px 11px 14px;
+    padding: 1.3rem 1.8rem 1.1rem 1.4rem;
+    background-color: #eee;
     display: flex;
-    padding: 35px 33px 48px; } }
-
-.hotels__list {
-  display: block;
-  margin: 0;
-  padding: 0; }
-
-.hotels__hotel {
-  padding: 13px 18px 11px 14px;
-  padding: 1.3rem 1.8rem 1.1rem 1.4rem;
-  background-color: #eee;
-  display: flex;
-  justify-content: center; }
-  @media (max-width: 319px) {
-    .hotels__hotel {
-      flex-wrap: wrap; } }
+    flex-wrap: wrap;
+    justify-content: center; }
 
 .list__element {
   font-size: 18px;
@@ -76,17 +72,10 @@ html {
   background-color: #e7e7e7;
   background-size: contain; }
 
-@media (min-width: 320px) {
-  .hotel__details {
-    margin: 0 6px;
-    margin: 0 0.6rem;
-    position: relative; } }
-
-@media (max-width: 319px) {
-  .hotel__details {
-    margin-top: 10px;
-    margin-top: 1rem;
-    text-align: center; } }
+.hotel__details {
+  margin-top: 10px;
+  margin-top: 1rem;
+  text-align: center; }
 
 .hotel__name {
   font-size: 16px;
@@ -97,24 +86,14 @@ html {
   .hotel__name::after {
     height: 14px;
     height: 1.4rem;
-    background: url("/ratings.png") no-repeat left top;
+    background: url("/ratings.png") no-repeat center top;
     content: '';
     display: block;
     width: 100%; }
-    @media (max-width: 319px) {
-      .hotel__name::after {
-        background-position-x: center; } }
 
 .hotel__price {
   margin-top: 10px;
   margin-top: 1rem; }
-  @media (min-width: 320px) {
-    .hotel__price {
-      bottom: -9px;
-      bottom: -0.9rem;
-      right: -11px;
-      right: -1.1rem;
-      position: absolute; } }
 
 .price__value {
   font-size: 24px;
@@ -126,3 +105,34 @@ html {
   font-size: 12px;
   font-size: 1.2rem;
   color: #666; }
+
+@media (min-width: 320px) {
+  .section__header {
+    background-size: auto; }
+  .hotels__hotel {
+    flex-wrap: nowrap; }
+  .hotel__name::after {
+    background-position-x: left; }
+  .hotel__details {
+    margin: 0 6px;
+    margin: 0 0.6rem;
+    position: relative;
+    text-align: left; }
+  .hotel__price {
+    bottom: -9px;
+    bottom: -0.9rem;
+    right: -11px;
+    right: -1.1rem;
+    position: absolute; } }
+
+@media (min-width: 640px) {
+  .hotels__list {
+    margin-right: 3%;
+    width: 33%; }
+  .hotels__hotel {
+    width: 74%; }
+  .hotel__image {
+    height: 142px;
+    height: 14.2rem;
+    width: 170px;
+    width: 17rem; } }
