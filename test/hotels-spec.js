@@ -1,7 +1,9 @@
 'use strict';
 
 const expect = require('chai').expect;
+const should = require('chai').should;
 const nock = require('nock');
+const sinon = require('sinon');
 const src_dir = '../public/js/src/';
 const { JSDOM } = require('jsdom');
 const Hotels = require(src_dir+'hotels.js');
@@ -17,8 +19,8 @@ describe('Hotels', () => {
   
   describe('#getList', () => {
     let hotels = new Hotels(),
-      server = 'http://localhost:8765', //'http://localhost:8765',
-      path = '/api/hotels',
+      server = 'http://jsonplaceholder.typicode.com', //'http://localhost:8765',
+      path = '/posts/1',
       url = server+path;
 
     var json = JSON.stringify([
@@ -30,19 +32,34 @@ describe('Hotels', () => {
       wrong_json = JSON.stringify(
         {"id":"1","name":"Hotel Sunny Palms"}
       );
+      
+    beforeEach(function() {
+      this.xhr = sinon.useFakeXMLHttpRequest();
+
+      var requests = this.requests = [];
+
+      this.xhr.onCreate = function (xhr) {
+        requests.push(xhr);
+      }.bind(this);
+    });
+
+    afterEach(function() {
+      this.xhr.restore();
+    });
        
     it('should fetch json with hotels from server', function(done) {
+      var callback = sinon.spy();
       global.window = dom1.window;
+
+			hotels.getList(url, callback);
       
-      expect(hotels.list).to.be.null;
-      expect(hotels.getList).to.be.a('function');
+      console.log('this 1',this);
       
-			hotels.getList(url, function(err, result) {
-        expect(hotels.list).to.not.be.null;
-        expect(JSON.parse(hotels.list)).to.have.length(4);
-        expect(hotels.list).to.equal(json);
-        done();
-      });
+      this.requests[0].respond(200, { 'Content-Type': 'text/json' }, wrong_json);
+      
+      //assert(callback.calledWith(wrong_json));
+      
+      console.log('this 2',this);
     });
   });
 });
