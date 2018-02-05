@@ -4,9 +4,7 @@ class Hotels {
   }
 
   getList(url) {
-    console.log('++++this----', this);
     return new Promise(function(resolve, reject){
-      console.log('>>>>this----', this);
 			if(typeof url === 'string' && url.length){
 				let xhr = new window.XMLHttpRequest();
 				// It's enough to check the headers to know if an image exists
@@ -17,7 +15,7 @@ class Hotels {
 				if(xhr.status === 200 || xhr.status === 304) {
           // TODO: check if it's a proper JSON
           this.list = xhr.responseText;
-          resolve();
+          resolve(xhr);
 				} else {
 					reject('Error in sending a request '+ url + ' status: '+xhr.status + ' message: '+xhr.statusText);
 				}
