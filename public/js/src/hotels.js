@@ -32,5 +32,3 @@ class Hotels {
 
   }
 }
-
-module.exports = Hotels;
