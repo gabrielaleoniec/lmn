@@ -29,5 +29,15 @@
 				</div>
 			</div>
 		</section>
+    <script src="js/src/hotels.js"></script>
+    <script>
+      var hotels = new Hotels();
+      console.log('hotels', hotels);
+      hotels.getList('http://localhost:8765/api/hotels').then((result) => {
+        console.log(result);
+        console.log(hotels.list);
+      });
+      
+    </script>
   </body>
 </html>

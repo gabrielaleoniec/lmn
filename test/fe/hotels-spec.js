@@ -35,18 +35,57 @@ describe('Hotels', () => {
     });
        
     it('should fetch json with hotels from server', function(done) {
-			hotels.getList(url, function(err, result) {
-        let tmp = JSON.parse(hotels_list);
+			hotels.getList(url).then((result)=> {
+        let json = JSON.parse(hotels_list);
 
-        expect(result).to.be.an('array');
-        expect(result.length).to.equal(4);
-        expect(result).to.eql(tmp);
-        expect(result[0]).to.be.an('object');
-        expect(result[0].name).to.equal('Hotel Sunny Palms');
+        console.log('result', result);
+        expect(hotels.list).to.be.an('array');
+        expect(hotels.list.length).to.equal(4);
+        expect(hotels.list).to.eql(json);
+        expect(hotels.list[0]).to.be.an('object');
+        expect(hotels.list[0].name).to.equal('Hotel Sunny Palms');
         done();
       });
       
       this.requests[0].respond(200, { 'Content-Type': 'text/json' }, hotels_list);
+    });
+    
+    it('should throw an error if json is not an expected array', function(done) {
+			hotels.getList(url).then((result) => {
+        throw new Error('Promise was unexpectedly fulfilled. Result: ' + result);
+      }, (error) => {
+        expect(error).to.not.be.empty;
+        expect(error).to.equal('Server didn\'t respond with a JSON array');
+        done();
+      });
+      
+      this.requests[0].respond(200, { 'Content-Type': 'text/json' }, wrong_hotels_list);
+    });
+    
+    it('should throw an error if there\'s a problem with connection', function(done) {
+			hotels.getList(url).then((result) => {
+        throw new Error('Promise was unexpectedly fulfilled. Result: ' + result);
+      }, (error) => {
+        console.log('error', error);
+        expect(error).to.not.be.empty;
+        expect(error).to.contain('404');
+        done();
+      });
+      
+      this.requests[0].respond(404, { 'Content-Type': 'text/html' }, null);
+    });
+    
+    it('should throw an error if the respond from server is not a json', function(done) {
+			hotels.getList(url).then((result) => {
+        throw new Error('Promise was unexpectedly fulfilled. Result: ' + result);
+      }, (error) => {
+        console.log('error', error);
+        expect(error).to.not.be.empty;
+        expect(error).to.equal('Server didn\'t respond with a JSON');
+        done();
+      });
+      
+      this.requests[0].respond(200, { 'Content-Type': 'text/html' }, null);
     });
   });
 });
