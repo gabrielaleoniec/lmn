@@ -1,8 +1,22 @@
 class Hotels {
-  constructor() {
+  constructor(parentType = 'ul', childType = 'li') {
     this.list = null;
-    this.parentType = 'ul';
-    this.childType = 'li';
+    // Think about either changing childType && parentType into private properties or
+    // about moving it to another part
+    let allowedPairs = {'div':'div', 'ul': 'li', 'ol':'li'};
+    if(parentType in allowedPairs){
+      this.parentType = parentType;
+
+      if(allowedPairs.parentType === childType){
+        this.childType = childType;
+      } else {
+        this.childType = allowedPairs.parentType;
+      this.childType ='li';
+      }
+    } else {
+      this.parentType = 'ul';
+      this.childType ='li';
+    }
   }
 
   getList(url) {
@@ -47,9 +61,18 @@ class Hotels {
   }
 
   setList(id) {
-    if(Array.isArray(this.list) && this.list.length>0){
-      let rootEl = document.getElementById(id),
-          parentEl = document.createElement(this.parentType);
+    if(typeof id !== 'string' || id.length === 0) {
+      throw new TypeError('Argument '+id+' given to function setList is not a string'); 
+    }
+    
+    if(!Array.isArray(this.list) || this.list.length === 0){
+      throw new TypeError('Property this.list is not an array'); 
+    }
+    
+    let rootEl = document.getElementById(id),
+        parentEl = document.createElement(this.parentType);
+    console.log(parentEl);
+    if(rootEl !== null){
       for(let obj in this.list){
         let el = document.createElement(this.childType);
         el.setAttribute('data-id', obj.id);
@@ -60,10 +83,8 @@ class Hotels {
       console.log('rootEl', rootEl);
       return rootEl.childElementCount;
     } else {
-      
-      let error = new TypeError('this.list is not an array'); 
-      console.log('Rzucamy błędem', error);
-      throw error;
+      console.log('Element with given id '+id+' doesn\'t exist');
+      throw new Error('Element with given id '+id+' doesn\'t exist');
     }
   }
 }

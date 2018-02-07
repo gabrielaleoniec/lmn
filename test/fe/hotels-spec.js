@@ -94,20 +94,81 @@ describe('Hotels', () => {
     
     beforeEach(function(){
       hotels = new Hotels();
-      // TODO add a stub
-      
-      
     });
     
     afterEach(function(){
       sandbox.restore();
     });
     
-    it('should throw an error when hotels.list is not an array', function(){
-      sandbox.stub(hotels, 'list').value(null);
-
-      expect(() => hotels.setList('foo')).to.throw(TypeError, 'this.list is not an array');
+    it('should throw an error when given argument is not a string', () => {
+      let id = 3,
+          error_msg = 'Argument '+id+' given to function setList is not a string';
+      expect(() => hotels.setList(id)).to.throw(TypeError, error_msg);
     });
     
+    it('should throw an error when hotels.list is not an array', () => {
+      sandbox.stub(hotels, 'list').value(null);
+
+      let error_msg = 'Property this.list is not an array';
+      expect(() => hotels.setList('foo')).to.throw(TypeError, error_msg);
+    });
+    
+    it('should throw an error when element with given id doesn\'t exist', () => {
+      sandbox.stub(hotels, 'list').value([
+          {"id":"1","name":"Hotel Sunny Palms"},
+          {"id":"2","name":"Hotel Snowy Mountains"},
+          {"id":"3","name":"Hotel Windy Sails"},
+          {"id":"4","name":"Hotel Middle of Nowhere"}
+      ]);
+      
+      sandbox.stub(document, 'getElementById').callsFake(() => {
+        return null;
+      });
+
+      let id = 'foo',
+          error_msg = 'Element with given id '+id+' doesn\'t exist';
+      expect(() => hotels.setList(id)).to.throw(Error, error_msg);
+    });
+    
+    it('should put a list of elements as children of a given HTML element with an ID', () => {
+      let parentEl = 'ul',
+          childEl = 'li',
+          hotels = new Hotels(parentEl, childEl),
+          spyAppCh = sinon.spy(),
+          spyCrEl = sinon.spy(document, 'createElement');
+          
+      sandbox.stub(hotels, 'list').value([
+          {"id":"1","name":"Hotel Sunny Palms"},
+          {"id":"2","name":"Hotel Snowy Mountains"},
+          {"id":"3","name":"Hotel Windy Sails"},
+          {"id":"4","name":"Hotel Middle of Nowhere"}
+      ]);
+      console.log('hotels.list.length', hotels.list.length);
+      
+      sandbox.stub(document, 'getElementById').callsFake((id) => {
+        return {
+          childElementCount: 3,
+          id: id,
+          tagName: "DIV",
+          nodeName: "DIV",
+          appendChild: spyAppCh
+        };
+      });
+
+      let id = 'id',
+          initialNumChildren = document.getElementById(id).childElementCount,
+          finalNumChildren = 0;
+      console.log('Liczba dzieci:', initialNumChildren);
+      
+      hotels.setList(id);
+      sinon.assert.calledTwice(document.getElementById);
+      sinon.assert.calledOnce(spyAppCh);
+      assert(spyCrEl.withArgs(parentEl).calledOnce);
+      assert(spyCrEl.withArgs(childEl).callCount === hotels.list.length);
+ 
+      finalNumChildren = document.getElementById(id).childElementCount;
+      console.log('finalNumChildren', finalNumChildren);
+      expect(finalNumChildren === initialNumChildren + hotels.list.length);
+    });
   });
 });
