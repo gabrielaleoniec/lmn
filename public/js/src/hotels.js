@@ -1,6 +1,8 @@
 class Hotels {
   constructor() {
     this.list = null;
+    this.parentType = 'ul';
+    this.childType = 'li';
   }
 
   getList(url) {
@@ -16,7 +18,7 @@ class Hotels {
             if(xhr.status === 200 || xhr.status === 304) {
               // Getting the content-type of the response
               let ct = xhr.getResponseHeader('content-type');
-              console.log(ct, typeof ct, ct.indexOf('json'));
+
               if(typeof ct === 'string' && ct.indexOf('json') !== -1){
                 try {
                   let tmp = JSON.parse(xhr.responseText);
@@ -44,7 +46,24 @@ class Hotels {
     }.bind(this));
   }
 
-  setList() {
-
+  setList(id) {
+    if(Array.isArray(this.list) && this.list.length>0){
+      let rootEl = document.getElementById(id),
+          parentEl = document.createElement(this.parentType);
+      for(let obj in this.list){
+        let el = document.createElement(this.childType);
+        el.setAttribute('data-id', obj.id);
+        el.innerHTML = obj.name;
+        parentEl.appendChild(el);
+      }
+      rootEl.appendChild(parentEl);
+      console.log('rootEl', rootEl);
+      return rootEl.childElementCount;
+    } else {
+      
+      let error = new TypeError('this.list is not an array'); 
+      console.log('Rzucamy błędem', error);
+      throw error;
+    }
   }
 }

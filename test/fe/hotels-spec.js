@@ -1,4 +1,5 @@
 var expect = chai.expect;
+var assert = chai.assert;
 
 describe('Hotels', () => {
 	it('should exist', () => {
@@ -6,7 +7,7 @@ describe('Hotels', () => {
 	});
   
   describe('#getList', () => {
-    let hotels = new Hotels(),
+    let hotels,
       server = 'http://localhost:8765',
       path = '/api/hotels',
       url = server+path,
@@ -22,6 +23,7 @@ describe('Hotels', () => {
       
     beforeEach(function() {
       this.xhr = sinon.useFakeXMLHttpRequest();
+      hotels = new Hotels();
 
       var requests = this.requests = [];
 
@@ -38,7 +40,6 @@ describe('Hotels', () => {
 			hotels.getList(url).then((result)=> {
         let json = JSON.parse(hotels_list);
 
-        console.log('result', result);
         expect(hotels.list).to.be.an('array');
         expect(hotels.list.length).to.equal(4);
         expect(hotels.list).to.eql(json);
@@ -66,7 +67,6 @@ describe('Hotels', () => {
 			hotels.getList(url).then((result) => {
         throw new Error('Promise was unexpectedly fulfilled. Result: ' + result);
       }, (error) => {
-        console.log('error', error);
         expect(error).to.not.be.empty;
         expect(error).to.contain('404');
         done();
@@ -79,7 +79,6 @@ describe('Hotels', () => {
 			hotels.getList(url).then((result) => {
         throw new Error('Promise was unexpectedly fulfilled. Result: ' + result);
       }, (error) => {
-        console.log('error', error);
         expect(error).to.not.be.empty;
         expect(error).to.equal('Server didn\'t respond with a JSON');
         done();
@@ -87,5 +86,28 @@ describe('Hotels', () => {
       
       this.requests[0].respond(200, { 'Content-Type': 'text/html' }, null);
     });
+  });
+  
+  describe('#setList', () => {
+    let hotels,
+        sandbox = sinon.createSandbox();;
+    
+    beforeEach(function(){
+      hotels = new Hotels();
+      // TODO add a stub
+      
+      
+    });
+    
+    afterEach(function(){
+      sandbox.restore();
+    });
+    
+    it('should throw an error when hotels.list is not an array', function(){
+      sandbox.stub(hotels, 'list').value(null);
+
+      expect(() => hotels.setList('foo')).to.throw(TypeError, 'this.list is not an array');
+    });
+    
   });
 });
