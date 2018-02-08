@@ -67,6 +67,10 @@ class Hotels {
       throw new TypeError('Argument '+id+' given to function setList is not a string'); 
     }
     
+    if(!Array.isArray(this.list) || this.list.length === 0){
+      throw new TypeError('Property this.list is not an array'); 
+    }
+    
     if(clP !== null && (typeof clP !== 'string' || clP.length === 0)) {
       throw new TypeError('Argument '+clP+' given to function setList is not a string'); 
     }
@@ -78,11 +82,7 @@ class Hotels {
     if(typeof prepend !== 'boolean') {
       throw new TypeError('Argument '+prepend+' given to function setList should be true or false'); 
     } 
-    
-    if(!Array.isArray(this.list) || this.list.length === 0){
-      throw new TypeError('Property this.list is not an array'); 
-    }
-    
+
     if(!id.match(/^\w\S*$/i)){
       throw new TypeError('Argument id: '+id+' has wrong format'); 
     }

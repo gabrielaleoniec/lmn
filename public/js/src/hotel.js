@@ -57,6 +57,56 @@ class Hotel {
       xhr.send();
     }.bind(this));
   }
+  
+  setHotel(id, classes = null){
+    if(typeof id !== 'string' || id.length === 0) {
+      throw new TypeError('Argument id '+id+' given to function setList is not a string'); 
+    }
+    
+    if(!id.match(/^\w\S*$/i)){
+      throw new TypeError('Argument id: '+id+' has wrong format'); 
+    }
+    
+    if(this.data === null || typeof this.data !== 'object' || !('name' in this.data)){
+      throw new TypeError('Property this.data is not a valid object'); 
+    }
+    
+    if(typeof classes === 'object' && classes !== null && !('name' in classes)){
+      throw new TypeError('Object classes is not valid'); 
+    }
+    
+    let clM = /^[a-z][a-z0-9_\-]*(\s[a-z][a-z0-9_\-]*)*$/i;
+    
+    for(let cl in classes) {
+      if(typeof classes[cl] !== 'string' || classes[cl].length === 0 || !classes[cl].match(clM)) {
+        throw new TypeError('Classes names in classes are not valid');
+      }
+    }
+    
+    let rootEl = document.getElementById(id);
+    
+    if(rootEl === null){
+      throw new Error('Element with given id '+id+' doesn\'t exist');
+    }
+    
+    for(let prop in this.data) {
+      let els = rootEl.getElementsByClassName('js-'+prop);
+      
+      console.log(els[0]);
+      
+      for(let i = 0; i < els.length; i++) {
+        console.log('petla');
+        if(els[i] !== undefined){
+          if(prop === 'name' || 'price') {
+            console.log('name lub price');
+            els[i].innerHTML = this.data[prop];
+          }
+        }
+      }
+      
+      console.log('b');
+    }
+  }
 }
 
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {

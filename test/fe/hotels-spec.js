@@ -90,7 +90,7 @@ describe('Hotels', () => {
   
   describe('#setList', () => {
     let hotels,
-        sandbox = sinon.createSandbox();;
+        sandbox = sinon.createSandbox();
     
     beforeEach(function(){
       hotels = new Hotels();
@@ -100,9 +100,15 @@ describe('Hotels', () => {
       sandbox.restore();
     });
     
-    it('should throw an error when given argument is not a string', () => {
+    it('should throw an error when given argument id is not a string', () => {
       let id = 3,
           error_msg = 'Argument '+id+' given to function setList is not a string';
+      expect(() => hotels.setList(id)).to.throw(TypeError, error_msg);
+    });
+    
+    it('should throw an error when given argument id is not valid', () => {
+      let id = 'wrong id',
+          error_msg = 'Argument id: '+id+' has wrong format';
       expect(() => hotels.setList(id)).to.throw(TypeError, error_msg);
     });
     

@@ -14,8 +14,16 @@ const dom1 = new JSDOM(
     <li data-id="2" class="list__element">Hotel Snowy Mountains</li>
     <li data-id="3" class="list__element">Hotel Windy Sails</li>
     <li data-id="4" class="list__element">Hotel Middle of Nowhere</li>
-  </ul>`,
-  { includeNodeLocations: true }
+  </ul>
+  <div id="hotel-data">
+    <img class="js-imgURL"/>
+    <div class="hotel__details">
+      <h2 class="js-name js-rating"></h2>
+      <div class="js-price"></div>
+      <div class="price__info">Total hotel stay</div>
+    </div>
+  </div>`,
+  { runScripts: "dangerously" }
 );
 
 describe('Hotel', () => {
@@ -149,6 +157,78 @@ describe('Hotel', () => {
       });
 
       this.requests[0].respond(200, { 'Content-Type': 'application/json'}, hotel_JS);
+    });
+  });
+  
+  describe('#setHotel', () => {
+    let hotel,
+        sandbox = sinon.createSandbox(), 
+        hotel_JS;
+    
+    beforeEach(function(){
+      hotel = new Hotel();
+      
+      hotel_JS = JSON.stringify({ 
+          "name":"Hotel Sunny Palms",
+          "imgUrl":"images/sunny.jpg",
+          "rating":5,
+          "price":108,
+          "id":1});
+    });
+    
+    afterEach(function(){
+      sandbox.restore();
+    });
+    
+    it('should throw an error when given argument id is not a string', () => {
+      let id = 3,
+          error_msg = 'Argument id '+id+' given to function setList is not a string';
+      expect(() => hotel.setHotel(id)).to.throw(TypeError, error_msg);
+    });
+    
+    it('should throw an error when given argument id is not valid', () => {
+      let id = 'wrong id',
+          error_msg = 'Argument id: '+id+' has wrong format';
+      expect(() => hotel.setHotel(id)).to.throw(TypeError, error_msg);
+    });
+    
+    it('should throw an error when hotel.data is not a JSON object', () => {
+      let error_msg = 'Property this.data is not a valid object';
+      sandbox.stub(hotel, 'data').value(null);
+      expect(() => hotel.setHotel('foo')).to.throw(TypeError, error_msg);
+    });
+    
+    it('should throw if object classes is not null, but is a wrong object', ()=>{
+      let msg = 'Object classes is not valid';
+      sandbox.stub(hotel, 'data').value(JSON.parse(hotel_JS));    
+      expect(() => hotel.setHotel('foo', {'foo': 'foo'})).to.throw(TypeError, msg);
+    });
+    
+    it('should throw if object classes contain invalid class names', ()=>{
+      let msg = 'Classes names in classes are not valid';
+      sandbox.stub(hotel, 'data').value(JSON.parse(hotel_JS));    
+      expect(() => hotel.setHotel('foo', {'name': '123foo'})).to.throw(TypeError, msg);
+    });
+    
+    it('should throw an error when element with given id doesn\'t exist', () => {
+      sandbox.stub(hotel, 'data').value(JSON.parse(hotel_JS));
+      global.document = dom1.window.document;
+
+      let id = 'foo',
+          error_msg = 'Element with given id '+id+' doesn\'t exist';
+      expect(() => hotel.setHotel('foo')).to.throw(Error, error_msg);
+    });
+    
+    it('should fill the appropriate fields in DOM', () => {
+      sandbox.stub(hotel, 'data').value(JSON.parse(hotel_JS));
+      global.document = dom1.window.document;
+
+      expect(() => hotel.setHotel('hotel-data')).to.not.throw;
+      expect(document.getElementsByClassName('js-name')[0].innerHTML).to.be.empty;
+      expect(document.getElementsByClassName('js-price')[0].innerHTML).to.be.empty;
+      hotel.setHotel('hotel-data');
+      expect(document.getElementsByClassName('js-name')[0].innerHTML).to.not.be.empty;
+      expect(document.getElementsByClassName('js-price')[0].innerHTML).to.not.be.empty;
     });
   });
 });
