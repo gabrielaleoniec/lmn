@@ -220,15 +220,28 @@ describe('Hotel', () => {
     });
     
     it('should fill the appropriate fields in DOM', () => {
+      let classes = {
+        'name': 'hotel__name',
+        'imgUrl': 'hotel__image',
+        'price': 'price__value'
+      };
       sandbox.stub(hotel, 'data').value(JSON.parse(hotel_JS));
       global.document = dom1.window.document;
+      
+      expect(() => hotel.setHotel('hotel-data', classes)).to.not.throw;
 
-      expect(() => hotel.setHotel('hotel-data')).to.not.throw;
       expect(document.getElementsByClassName('js-name')[0].innerHTML).to.be.empty;
       expect(document.getElementsByClassName('js-price')[0].innerHTML).to.be.empty;
-      hotel.setHotel('hotel-data');
-      expect(document.getElementsByClassName('js-name')[0].innerHTML).to.not.be.empty;
-      expect(document.getElementsByClassName('js-price')[0].innerHTML).to.not.be.empty;
+      expect(document.getElementsByClassName('js-imgURL')[0].src).to.be.empty;
+      expect(document.getElementsByClassName('js-rating')[0].className).to.not.contain('rating-5');
+      hotel.setHotel('hotel-data', classes);
+      expect(document.getElementsByClassName('js-name')[0].innerHTML).to.be.equal(hotel.data['name']);
+      expect(document.getElementsByClassName('js-price')[0].innerHTML).to.be.equal(hotel.data['price']+'');
+      expect(document.getElementsByClassName('js-imgURL')[0].src).to.be.equal(hotel.data['imgUrl']);
+      expect(document.getElementsByClassName('js-rating')[0].className).to.contain('rating-5');
+      //expect(document.getElementsByClassName('js-name')[0].className).to.contain(classes.name);
+      //expect(document.getElementsByClassName('js-price')[0].className).to.contain(classes.price);
+      //expect(document.getElementsByClassName('js-imgURL')[0].className).to.contain(classes.imgURL);
     });
   });
 });

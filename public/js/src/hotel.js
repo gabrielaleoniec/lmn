@@ -92,19 +92,24 @@ class Hotel {
     for(let prop in this.data) {
       let els = rootEl.getElementsByClassName('js-'+prop);
       
-      console.log(els[0]);
-      
       for(let i = 0; i < els.length; i++) {
-        console.log('petla');
         if(els[i] !== undefined){
-          if(prop === 'name' || 'price') {
-            console.log('name lub price');
+          if(prop === 'name' || prop === 'price') {
             els[i].innerHTML = this.data[prop];
+          }
+          if(prop === 'imgUrl') {
+            els[i].setAttribute("src", this.data[prop]);
+          }
+          if(prop === 'rating') {
+            els[i].className.replace(/^rating-[0-9]$/, '');
+            els[i].className+= ' rating-'+this.data[prop];
+          }
+          
+          if(classes !== null && classes[prop] !== undefined){
+            els[i].classList.add(classes[prop]);
           }
         }
       }
-      
-      console.log('b');
     }
   }
 }
