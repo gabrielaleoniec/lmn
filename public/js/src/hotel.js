@@ -10,8 +10,19 @@ class Hotel {
     }
 
     if(typeof url !== 'string' || url.length === 0){
-      throw new Error('Function getHotel needs an id of object given a string');
+      throw new Error('Function getHotel needs a valid URL');
     }
+    
+    let valUrl = /^(https?:)?\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}(\.[a-z]{2,4})?\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/;
+    
+    if(!url.match(valUrl)){
+      console.log('zły url');
+      throw new Error('Function getHotel needs a valid URL');
+    }
+    
+    if(typeof idH !== 'string' || idH.length === 0 || !idH.match(/^\w$/)){
+      throw new Error('Function getHotel needs an id of the hotel');
+    }   
   }
 }
 

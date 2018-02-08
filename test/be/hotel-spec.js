@@ -19,8 +19,6 @@ describe('Hotel', () => {
 			expect(Hotel).to.be.a('function');
 	});
   
-
-  
   describe('#getHotel', () => {
     let hotel;
     
@@ -33,11 +31,31 @@ describe('Hotel', () => {
       expect(()=>hotel.getHotel()).to.throw(Error, msg);
     });
     
-    it('should throw if passed arguments are wrong', () => {
-      let msg = 'Function getHotel needs an id of object given a string';
-      expect(()=>hotel.getHotel(3, '')).to.throw(Error, msg);
-      expect(()=>hotel.getHotel('', '')).to.throw(Error, msg);
+    it('should throw if passed URL is wrong', () => {
+      let msg = 'Function getHotel needs a valid URL';
+      expect(()=>hotel.getHotel(0, '3')).to.throw(Error, msg);
+      expect(()=>hotel.getHotel('', '3')).to.throw(Error, msg);
+      expect(()=>hotel.getHotel('abc', '3')).to.throw(Error, msg);
+      expect(()=>hotel.getHotel('abc.com', '3')).to.throw(Error, msg);
+      expect(()=>hotel.getHotel('http://localhost', '3')).to.not.throw;
+      expect(()=>hotel.getHotel('http://localhost:8765', '3')).to.not.throw;
+      expect(()=>hotel.getHotel('http://localhost:8765/api/hotels', '3')).to.not.throw;
+      expect(()=>hotel.getHotel('http://localhost:8765/api/hotels/3', '3')).to.not.throw;
+      expect(()=>hotel.getHotel('http://api.lastminute.com/hotels', '3')).to.not.throw;
     });
+    
+    it('should throw if passed id of a hotel is wrong', () => {
+      let msg = 'Function getHotel needs an id of the hotel';
+      expect(()=>hotel.getHotel('http://foo.com', 3)).to.throw(Error, msg);
+      expect(()=>hotel.getHotel('http://foo.com', '')).to.throw(Error, msg);
+      expect(()=>hotel.getHotel('http://foo.com', 'wrong id')).to.throw(Error, msg);
+      expect(()=>hotel.getHotel('http://foo.com', '3')).to.not.throw;
+      expect(()=>hotel.getHotel('http://foo.com', 'foo-boo')).to.not.throw;
+    });
+    
+    /*it('should get a proper JSON object from the given server', () => {
+      expect(()=>hotel.getHotel('http://localhost:8765/api/hotels', '3')).to.not.throw;
+    })*/
     
   });
 });

@@ -37,7 +37,7 @@ describe('Hotels', () => {
     });
        
     it('should fetch json with hotels from server', function(done) {
-			hotels.getList(url).then((result)=> {
+			hotels.getList(url).then(()=> {
         let json = JSON.parse(hotels_list);
 
         expect(hotels.list).to.be.an('array');
