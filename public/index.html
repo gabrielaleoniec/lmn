@@ -10,13 +10,7 @@
       <h1 class="section__header">
         <span class="off-screen">lastminute.com</span>
       </h1>
-			<div class="hotels">
-				<ul class="hotels__list">
-					<li class="list__element">Hotel Sunny Palms</li>
-					<li class="list__element">Hotel Snowy Mountains</li>
-					<li class="list__element">Hotel Windy Sails</li>
-					<li class="list__element">Hotel Middle of Nowhere</li>
-				</ul>
+			<div class="hotels" id="hotels-list">
 				<div class="hotels__hotel">
 					<div class="hotel__image"></div>
 					<div class="hotel__details">
@@ -33,11 +27,7 @@
     <script>
       var hotels = new Hotels();
       console.log('hotels', hotels);
-      hotels.getList('http://localhost:8765/api/hotels').then((result) => {
-        console.log(result);
-        console.log(hotels.list);
-      });
-      
+      hotels.createList('http://localhost:8765/api/hotels', 'hotels-list', 'hotels__list', 'list__element');
     </script>
   </body>
 </html>

@@ -5,7 +5,7 @@ describe('Hotels', () => {
 	it('should exist', () => {
     expect(Hotels).to.be.a('function');
 	});
-  
+    
   describe('#getList', () => {
     let hotels,
       server = 'http://localhost:8765',
@@ -131,9 +131,9 @@ describe('Hotels', () => {
     });
     
     it('should put a list of elements as children of a given HTML element with an ID', () => {
-      let parentEl = 'ul',
-          childEl = 'li',
-          hotels = new Hotels(parentEl, childEl),
+      let parTag = 'ul',
+          chTag = 'li',
+          hotels = new Hotels(parTag, chTag),
           spyAppCh = sinon.spy(),
           spyCrEl = sinon.spy(document, 'createElement');
           
@@ -147,26 +147,27 @@ describe('Hotels', () => {
       
       sandbox.stub(document, 'getElementById').callsFake((id) => {
         return {
-          childElementCount: 3,
+          chTagementCount: 0,
           id: id,
           tagName: "DIV",
           nodeName: "DIV",
+          innerHTML: "",
           appendChild: spyAppCh
         };
       });
 
       let id = 'id',
-          initialNumChildren = document.getElementById(id).childElementCount,
+          initialNumChildren = document.getElementById(id).chTagementCount,
           finalNumChildren = 0;
       console.log('Liczba dzieci:', initialNumChildren);
       
       hotels.setList(id);
       sinon.assert.calledTwice(document.getElementById);
       sinon.assert.calledOnce(spyAppCh);
-      assert(spyCrEl.withArgs(parentEl).calledOnce);
-      assert(spyCrEl.withArgs(childEl).callCount === hotels.list.length);
+      assert(spyCrEl.withArgs(parTag).calledOnce);
+      assert(spyCrEl.withArgs(chTag).callCount === hotels.list.length);
  
-      finalNumChildren = document.getElementById(id).childElementCount;
+      finalNumChildren = document.getElementById(id).chTagementCount;
       console.log('finalNumChildren', finalNumChildren);
       expect(finalNumChildren === initialNumChildren + hotels.list.length);
     });

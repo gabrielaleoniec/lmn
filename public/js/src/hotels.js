@@ -1,24 +1,17 @@
 class Hotels {
-  constructor(parentType = 'ul', childType = 'li') {
+  constructor() {
     this.list = null;
-    // Think about either changing childType && parentType into private properties or
-    // about moving it to another part
-    let allowedPairs = {'div':'div', 'ul': 'li', 'ol':'li'};
-    if(parentType in allowedPairs){
-      this.parentType = parentType;
-
-      if(allowedPairs.parentType === childType){
-        this.childType = childType;
-      } else {
-        this.childType = allowedPairs.parentType;
-      this.childType ='li';
-      }
-    } else {
-      this.parentType = 'ul';
-      this.childType ='li';
-    }
+  }
+  
+  createList(url, id, clP = null, clCh = null, prepend = true){
+    this.getList(url).then(()=>this.setList(id, clP, clCh, prepend));
   }
 
+  /**
+   * Gets JSON list from given URL
+   * @param {String} url //The URL address
+   * @returns {Promise}
+   */
   getList(url) {
 		return new Promise(function(resolve, reject){
       if(typeof url === 'string' && url.length){
@@ -60,31 +53,91 @@ class Hotels {
     }.bind(this));
   }
 
-  setList(id) {
+  /**
+   * Sets a list to an element given by id and described by parTag && chTag
+   * @param {String} id //Id of the element in which the list will be nested
+   * @param {String} clP //List of classes of the list parent separeted by a space
+   * @param {String} clCh //List of classes of a list child separeted by a space
+   * @param {Boolean} prepend //If true - prepend the list to root, otherwise - append
+   * @returns {Integer} Number of elements in the list
+   */
+  setList(id, clP = null, clCh = null, prepend = true) {
     if(typeof id !== 'string' || id.length === 0) {
       throw new TypeError('Argument '+id+' given to function setList is not a string'); 
     }
+    
+    if(clP !== null && (typeof clP !== 'string' || clP.length === 0)) {
+      throw new TypeError('Argument '+clP+' given to function setList is not a string'); 
+    }
+    
+    if(clCh !== null && (typeof clCh !== 'string' || clCh.length === 0)) {
+      throw new TypeError('Argument '+clCh+' given to function setList is not a string'); 
+    }  
+    
+    if(typeof prepend !== 'boolean') {
+      throw new TypeError('Argument '+prepend+' given to function setList should be true or false'); 
+    } 
     
     if(!Array.isArray(this.list) || this.list.length === 0){
       throw new TypeError('Property this.list is not an array'); 
     }
     
-    let rootEl = document.getElementById(id),
-        parentEl = document.createElement(this.parentType);
-    console.log(parentEl);
+    if(!id.match(/^\w\S*$/i)){
+      throw new TypeError('Argument id: '+id+' has wrong format'); 
+    }
+    
+    let clM = /^[a-z][a-z0-9_\-]*(\s[a-z][a-z0-9_\-]*)*$/i;
+    
+    if(!clP.match(clM)){
+      throw new TypeError('Argument '+clP+' has wrong format'); 
+    }
+    
+    if(!clCh.match(clM)){
+      throw new TypeError('Argument '+clCh+' has wrong format'); 
+    }
+    
+    //TODO add regular expressions to check the arguments
+    
+    let parTag = 'ul', 
+        chTag = 'li',
+        rootEl = document.getElementById(id),
+        parentEl = document.createElement(parTag);
+
     if(rootEl !== null){
-      for(let obj in this.list){
-        let el = document.createElement(this.childType);
-        el.setAttribute('data-id', obj.id);
-        el.innerHTML = obj.name;
-        parentEl.appendChild(el);
+      if(clP) {
+        parentEl.setAttribute('class', clP);
       }
-      rootEl.appendChild(parentEl);
-      console.log('rootEl', rootEl);
+      for(let i in this.list){
+        let tmp = this.list[i];
+        if(typeof tmp === 'object' && 'id' in tmp && 'name' in tmp) {
+          let el = document.createElement(chTag);
+          el.setAttribute('data-id', this.list[i].id);
+          if(clCh) {
+            el.setAttribute('class', clCh);
+          }
+          el.innerHTML = this.list[i].name;
+          parentEl.appendChild(el);
+        } else {
+          throw new TypeError('Wrong object passed in JSON list of object with hotels');
+        }
+      }
+      if(prepend) {
+        console.log('firstChild', rootEl.childElementCount, rootEl.firstElementChild );
+        rootEl.insertBefore(parentEl, rootEl.childNodes[0]);
+      } else {
+        rootEl.appendChild(parentEl);
+      }
+      console.log('Final rootEl', rootEl);
       return rootEl.childElementCount;
     } else {
       console.log('Element with given id '+id+' doesn\'t exist');
       throw new Error('Element with given id '+id+' doesn\'t exist');
     }
   }
+}
+
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+  module.exports = Hotels;
+} else {
+  window.Hotels = Hotels;
 }
