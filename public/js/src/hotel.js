@@ -1,6 +1,6 @@
 class Hotel {
   constructor(){
-    
+    this.data = null;
   }
   
 
@@ -35,11 +35,14 @@ class Hotel {
             let ct = xhr.getResponseHeader('content-type'),
                 resp = xhr.responseText;
             if(typeof ct === 'string' && ct.indexOf('json') !== -1 && resp !== null && resp.length>0){
-              let tmp,
-                  err;
               try {
-                JSON.parse(resp);
-                resolve('ok');
+                let tmp = JSON.parse(resp);
+                if('name' in tmp) {
+                  this.data = tmp;
+                  resolve(tmp);
+                } else {
+                  reject('JSON doesn\'t have the name field');
+                }
               } catch (e) {
                 reject(e);
               };
@@ -50,9 +53,9 @@ class Hotel {
             reject(xhr.status +': '+xhr.statusText+'('+url+')');
           }
         }
-      };
+      }.bind(this);
       xhr.send();
-    });
+    }.bind(this));
   }
 }
 

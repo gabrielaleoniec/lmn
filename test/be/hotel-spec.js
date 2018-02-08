@@ -28,16 +28,7 @@ describe('Hotel', () => {
         server = 'http://localhost:8765',
         path = '/api/hotels/',
         id = '1',
-        url = server+path,
-        hotel_JS = JSON.stringify({ 
-              "name":"Hotel Sunny Palms",
-              "imgUrl":"images/sunny.jpg",
-              "rating":5,
-              "price":108,
-              "id":1}),
-        wrong_hotel_JS = JSON.stringify(
-          {"id":"1"}
-        );
+        url = server+path;
     
     beforeEach(function() {
       hotel = new Hotel();
@@ -127,7 +118,11 @@ describe('Hotel', () => {
       this.requests[0].respond(200, { 'Content-Type': 'application/json'}, '[{ "id": 12, }]');
     });
     
-    it('should return an error if the JSON doesn\'t have required fields', function(done) {     
+    it('should return an error if the JSON doesn\'t have required fields', function(done) {
+      let wrong_hotel_JS = JSON.stringify(
+        {"id":"1"}
+      );
+      
 			hotel.getHotel(url, id).then((result) => {
         throw new Error('Promise was unexpectedly fulfilled. Result: ' + result);
       }, (error) => {
@@ -135,7 +130,25 @@ describe('Hotel', () => {
         done();
       });
       
-      this.requests[0].respond(200, { 'Content-Type': 'application/json'}, '[{ "id": 12, }]');
+      this.requests[0].respond(200, { 'Content-Type': 'application/json'}, wrong_hotel_JS);
+    });
+    
+    it('should return a valid JSON if the server responds properly', function(done) {
+      let hotel_JS = JSON.stringify({ 
+          "name":"Hotel Sunny Palms",
+          "imgUrl":"images/sunny.jpg",
+          "rating":5,
+          "price":108,
+          "id":1});
+            
+			hotel.getHotel(url, id).then((result) => {
+        expect(result).to.be.an('object');
+        expect(result).to.eql(JSON.parse(hotel_JS));
+        expect(hotel.data).to.eql(JSON.parse(hotel_JS));
+        done();
+      });
+
+      this.requests[0].respond(200, { 'Content-Type': 'application/json'}, hotel_JS);
     });
   });
 });
