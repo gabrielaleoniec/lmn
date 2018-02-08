@@ -16,9 +16,7 @@ class Hotels {
 		return new Promise(function(resolve, reject){
       if(typeof url === 'string' && url.length){
         let xhr = new window.XMLHttpRequest();
-        // It's enough to check the headers to know if an image exists
-        // Last parameter is for asynchronous request
-        // Could be done asynchronously with the usage of ES7 await
+
         xhr.open('GET', url, true);
         xhr.onreadystatechange = function() {
           if(xhr.readyState === 4) {

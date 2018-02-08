@@ -22,9 +22,9 @@ describe('Hotels', () => {
       );
       
     beforeEach(function() {
-      this.xhr = sinon.useFakeXMLHttpRequest();
       hotels = new Hotels();
-
+      
+      this.xhr = sinon.useFakeXMLHttpRequest();
       var requests = this.requests = [];
 
       this.xhr.onCreate = function (xhr) {
