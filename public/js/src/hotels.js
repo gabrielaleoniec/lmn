@@ -4,7 +4,9 @@ class Hotels {
   }
   
   createList(url, id, clP = null, clCh = null, prepend = true){
-    this.getList(url).then(()=>this.setList(id, clP, clCh, prepend));
+    this.getList(url).then(
+      ()=>this.setList(id, clP, clCh, prepend),
+      (error)=>console.log(error));
   }
 
   /**
@@ -23,8 +25,9 @@ class Hotels {
             if(xhr.status === 200 || xhr.status === 304) {
               // Getting the content-type of the response
               let ct = xhr.getResponseHeader('content-type');
+              let cl = xhr.getResponseHeader('content-length');
 
-              if(typeof ct === 'string' && ct.indexOf('json') !== -1){
+              if(typeof ct === 'string' && ct.indexOf('json') !== -1 && cl !== 0){
                 try {
                   let tmp = JSON.parse(xhr.responseText);
                   if(Array.isArray(tmp) && tmp.length > 0){

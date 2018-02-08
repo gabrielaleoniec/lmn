@@ -61,7 +61,7 @@ describe('Hotel', () => {
       expect(()=>hotel.getHotel()).to.throw(Error, msg);
     });
     
-    it('should throw if passed URL is wrong', () => {
+    it('should throw if URL passed to the function is wrong', () => {
       let msg = 'Function getHotel needs a valid URL';
       expect(()=>hotel.getHotel(0, '3')).to.throw(Error, msg);
       expect(()=>hotel.getHotel('', '3')).to.throw(Error, msg);
@@ -74,7 +74,7 @@ describe('Hotel', () => {
       expect(()=>hotel.getHotel('http://api.lastminute.com/hotels', '3')).to.not.throw;
     });
     
-    it('should throw if passed id of a hotel is wrong', () => {
+    it('should throw if id passed to the function of a hotel is wrong', () => {
       let msg = 'Function getHotel needs an id of the hotel';
       expect(()=>hotel.getHotel('http://foo.com', 3)).to.throw(Error, msg);
       expect(()=>hotel.getHotel('http://foo.com', '')).to.throw(Error, msg);
@@ -83,11 +83,10 @@ describe('Hotel', () => {
       expect(()=>hotel.getHotel('http://foo.com', 'foo-boo')).to.not.throw;
     });
     
-    it('should throw an error if there\'s a problem with connection', function(done) {     
+    it('should return an error if there\'s a problem with connection', function(done) {     
 			hotel.getHotel(url, id).then((result) => {
         throw new Error('Promise was unexpectedly fulfilled. Result: ' + result);
       }, (error) => {
-        expect(error).to.not.be.empty;
         expect(error).to.contain('404');
         done();
       });
@@ -95,8 +94,49 @@ describe('Hotel', () => {
       this.requests[0].respond(404, { 'Content-Type': 'text/html' }, null);
     });
     
+    it('should return an error if server doesn\'t respond with a JSON', function(done) {     
+			hotel.getHotel(url, id).then((result) => {
+        throw new Error('Promise was unexpectedly fulfilled. Result: ' + result);
+      }, (error) => {
+        expect(error).to.be.equal('The server didn\'t respond with a JSON');
+        done();
+      });
+      
+      this.requests[0].respond(200, { 'Content-Type': 'text/html' }, null);
+    });
     
+    it('should return an error if the returned JSON is null', function(done) {     
+			hotel.getHotel(url, id).then((result) => {
+        throw new Error('Promise was unexpectedly fulfilled. Result: ' + result);
+      }, (error) => {
+        expect(error).to.be.equal('The server didn\'t respond with a JSON');
+        done();
+      });
+      
+      this.requests[0].respond(200, { 'Content-Type': 'application/json'}, null);
+    });
     
+    it('should return an error if the returned JSON is wrong', function(done) {     
+			hotel.getHotel(url, id).then((result) => {
+        throw new Error('Promise was unexpectedly fulfilled. Result: ' + result);
+      }, (error) => {
+        expect(error).to.be.an('error');
+        done();
+      });
+      
+      this.requests[0].respond(200, { 'Content-Type': 'application/json'}, '[{ "id": 12, }]');
+    });
+    
+    it('should return an error if the JSON doesn\'t have required fields', function(done) {     
+			hotel.getHotel(url, id).then((result) => {
+        throw new Error('Promise was unexpectedly fulfilled. Result: ' + result);
+      }, (error) => {
+        expect(error).to.be.equal('JSON doesn\'t have the name field');
+        done();
+      });
+      
+      this.requests[0].respond(200, { 'Content-Type': 'application/json'}, '[{ "id": 12, }]');
+    });
   });
 });
 
