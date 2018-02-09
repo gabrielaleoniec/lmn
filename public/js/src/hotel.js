@@ -3,7 +3,61 @@ class Hotel {
     this.data = null;
   }
   
+  addEvents(id, url, targetId, clName = null){
+    if(arguments.length < 3){
+      throw new Error('Function getHotel needs two arguments');
+    }
+    
+    if(typeof id !== 'string' || id.length === 0) {
+      throw new TypeError('Argument id '+id+' given to function setList is not a string'); 
+    }
+    
+    if(!id.match(/^\w\S*$/i)){
+      throw new TypeError('Argument id: '+id+' has wrong format'); 
+    }
+    
+    if(clName !== null && typeof clName !== 'string' || clName.length === 0) {
+      throw new TypeError('Argument class '+clName+' given to function setList is not a string'); 
+    }
+    
+    let clM = /^[a-z][a-z0-9_\-]*$/i;
+    if(clName !== null && !clName.match(clM)){
+      throw new TypeError('Given class name is not valid');
+    }
 
+    let event = 'click',
+        rootEl = document.getElementById(id), 
+        els;
+
+    if(rootEl === null) {
+      throw new Error('Element with given id '+id+' doesn\'t exist');
+    }
+
+    if(clName === null){
+      els = rootEl.getChildren();
+    } else {
+      els = rootEl.getElementsByClassName(clName);
+    }
+    
+    let _self = this;
+
+    for(let i = 0; i < els.length; i++) {
+      els[i].addEventListener(event, function list(){
+        let idH = this.dataset.id;
+        _self.getHotel(url, idH).then(()=>{
+          _self.setHotel();
+        });
+      });
+    }
+    console.log('Klik', this);
+  }
+
+  /**
+   * Gets data of a hotel from given URL in a form of JSON
+   * @param {string} url
+   * @param {atring} idH
+   * @returns {Promise}
+   */
   getHotel(url, idH){
     //URL validation
     if(arguments.length !== 2){

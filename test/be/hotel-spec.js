@@ -9,7 +9,7 @@ const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
 
 const dom1 = new JSDOM(
-  `<ul class="hotels__list">
+  `<ul class="hotels__list" id="hotels-list">
     <li data-id="1" class="list__element">Hotel Sunny Palms</li>
     <li data-id="2" class="list__element">Hotel Snowy Mountains</li>
     <li data-id="3" class="list__element">Hotel Windy Sails</li>
@@ -30,6 +30,62 @@ describe('Hotel', () => {
   it('should exist', () => {
 			expect(Hotel).to.be.a('function');
 	});
+  
+  describe('#addEvents', () => {
+    let hotel;
+    
+    beforeEach(function() {
+      hotel = new Hotel();
+    });
+    
+    it('should throw if no arguments are passed', () => {
+      let msg = 'Function getHotel needs two arguments';
+      expect(()=>hotel.addEvents()).to.throw(Error, msg);
+    });
+    
+    it('should throw an error when given argument id is not a string', () => {
+      let id = 3,
+          error_msg = 'Argument id '+id+' given to function setList is not a string';
+      expect(() => hotel.addEvents(id, 'foo')).to.throw(TypeError, error_msg);
+    });
+    
+    it('should throw an error when given argument id is not valid', () => {
+      let id = 'wrong id',
+          error_msg = 'Argument id: '+id+' has wrong format';
+      expect(() => hotel.addEvents(id, 'foo')).to.throw(TypeError, error_msg);
+    });
+    
+    it('should throw an error when given argument class is not a string', () => {
+      let clName = 3,
+          error_msg = 'Argument class '+clName+' given to function setList is not a string';
+      expect(() => hotel.addEvents('foo', clName)).to.throw(TypeError, error_msg);
+    });
+    
+    it('should throw an error when given argument class is not valid', ()=>{
+      let error_msg = 'Given class name is not valid';
+      expect(() => hotel.addEvents('foo', 'wrong class')).to.throw(TypeError, error_msg);
+    });
+    
+    it('should throw an error when element with given id doesn\'t exist', () => {
+      global.document = dom1.window.document;
+
+      let id = 'foo',
+          error_msg = 'Element with given id '+id+' doesn\'t exist';
+      expect(() => hotel.addEvents('foo', 'foo')).to.throw(Error, error_msg);
+    });
+    
+    it('should trigger a getHotel function whenever element of a list is clicked', () => {
+      global.document = dom1.window.document;
+      let buttonClickSuccessSpy = sinon.spy();
+      
+      document.getElementsByClassName('list__element')[0].addEventListener('click', buttonClickSuccessSpy);
+      document.getElementsByClassName('list__element')[0].click();
+      expect(document.getElementsByClassName('js-name')[0].innerHTML).to.be.empty;
+      hotel.addEvents('hotels-list', 'list__element');
+      expect(buttonClickSuccessSpy.callCount).to.equal(1);
+      expect(document.getElementsByClassName('js-name')[0].innerHTML).to.not.be.empty;
+    });
+  });
   
   describe('#getHotel', () => {
     let hotel,
@@ -55,7 +111,7 @@ describe('Hotel', () => {
       this.xhr.restore();
     });
     
-    it('should throw if no argumants are passed', () => {
+    it('should throw if no arguments are passed', () => {
       let msg = 'Function getHotel needs two arguments';
       expect(()=>hotel.getHotel()).to.throw(Error, msg);
     });
@@ -239,9 +295,9 @@ describe('Hotel', () => {
       expect(document.getElementsByClassName('js-price')[0].innerHTML).to.be.equal(hotel.data['price']+'');
       expect(document.getElementsByClassName('js-imgURL')[0].src).to.be.equal(hotel.data['imgUrl']);
       expect(document.getElementsByClassName('js-rating')[0].className).to.contain('rating-5');
-      //expect(document.getElementsByClassName('js-name')[0].className).to.contain(classes.name);
-      //expect(document.getElementsByClassName('js-price')[0].className).to.contain(classes.price);
-      //expect(document.getElementsByClassName('js-imgURL')[0].className).to.contain(classes.imgURL);
+      expect(document.getElementsByClassName('js-name')[0].className).to.contain(classes['name']);
+      expect(document.getElementsByClassName('js-price')[0].className).to.contain(classes['price']);
+      expect(document.getElementsByClassName('js-imgUrl')[0].className).to.contain(classes['imgUrl']);
     });
   });
 });
