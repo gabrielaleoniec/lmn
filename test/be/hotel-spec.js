@@ -39,31 +39,56 @@ describe('Hotel', () => {
     });
     
     it('should throw if no arguments are passed', () => {
-      let msg = 'Function getHotel needs two arguments';
+      let msg = 'Function addEvents needs at least three arguments';
       expect(()=>hotel.addEvents()).to.throw(Error, msg);
+    });
+    
+    it('should throw if URL passed to the function is wrong', () => {
+      let msg = 'Function addEvents needs a valid URL';
+      expect(()=>hotel.addEvents(0, '3', 'hotel-data')).to.throw(Error, msg);
+      expect(()=>hotel.addEvents('', '3', 'hotel-data')).to.throw(Error, msg);
+      expect(()=>hotel.addEvents('abc', '3', 'hotel-data')).to.throw(Error, msg);
+      expect(()=>hotel.addEvents('abc.com', '3', 'hotel-data')).to.throw(Error, msg);
+      expect(()=>hotel.addEvents('http://localhost', '3', 'hotel-data')).to.not.throw;
+      expect(()=>hotel.addEvents('http://localhost:8765', '3', 'hotel-data')).to.not.throw;
+      expect(()=>hotel.addEvents('http://localhost:8765/api/hotels', '3', 'hotel-data')).to.not.throw;
+      expect(()=>hotel.addEvents('http://localhost:8765/api/hotels/3', '3', 'hotel-data')).to.not.throw;
+      expect(()=>hotel.addEvents('http://api.lastminute.com/hotels', '3', 'hotel-data')).to.not.throw;
     });
     
     it('should throw an error when given argument id is not a string', () => {
       let id = 3,
           error_msg = 'Argument id '+id+' given to function setList is not a string';
-      expect(() => hotel.addEvents(id, 'foo')).to.throw(TypeError, error_msg);
+      expect(() => hotel.addEvents('http://foo.com', id, 'foo')).to.throw(TypeError, error_msg);
     });
     
     it('should throw an error when given argument id is not valid', () => {
       let id = 'wrong id',
           error_msg = 'Argument id: '+id+' has wrong format';
-      expect(() => hotel.addEvents(id, 'foo')).to.throw(TypeError, error_msg);
+      expect(() => hotel.addEvents('http://foo.com', id, 'foo')).to.throw(TypeError, error_msg);
+    });
+    
+    it('should throw an error when given argument target id is not a string', () => {
+      let id = 3,
+          error_msg = 'Argument targetId '+id+' given to function setList is not a string';
+      expect(() => hotel.addEvents('http://foo.com', 'hotels-list', id, 'foo')).to.throw(TypeError, error_msg);
+    });
+    
+    it('should throw an error when given argument target id is not valid', () => {
+      let id = 'wrong id',
+          error_msg = 'Argument targetId: '+id+' has wrong format';
+      expect(() => hotel.addEvents('http://foo.com', 'hotels-list', id, 'foo')).to.throw(TypeError, error_msg);
     });
     
     it('should throw an error when given argument class is not a string', () => {
       let clName = 3,
           error_msg = 'Argument class '+clName+' given to function setList is not a string';
-      expect(() => hotel.addEvents('foo', clName)).to.throw(TypeError, error_msg);
+      expect(() => hotel.addEvents('http://foo.com', 'hotels-list', 'hotel-data', clName)).to.throw(TypeError, error_msg);
     });
     
     it('should throw an error when given argument class is not valid', ()=>{
       let error_msg = 'Given class name is not valid';
-      expect(() => hotel.addEvents('foo', 'wrong class')).to.throw(TypeError, error_msg);
+      expect(() => hotel.addEvents('http://foo.com', 'hotels-list', 'hotel-data', 'wrong class')).to.throw(TypeError, error_msg);
     });
     
     it('should throw an error when element with given id doesn\'t exist', () => {
@@ -71,7 +96,15 @@ describe('Hotel', () => {
 
       let id = 'foo',
           error_msg = 'Element with given id '+id+' doesn\'t exist';
-      expect(() => hotel.addEvents('foo', 'foo')).to.throw(Error, error_msg);
+      expect(() => hotel.addEvents('http://foo.com', id, 'hotel-data')).to.throw(Error, error_msg);
+    });
+    
+    it('should throw an error when element with given target id doesn\'t exist', () => {
+      global.document = dom1.window.document;
+
+      let id = 'foo',
+          error_msg = 'Element with given target id '+id+' doesn\'t exist';
+      expect(() => hotel.addEvents('http://foo.com', 'hotels-list', id)).to.throw(Error, error_msg);
     });
     
     it('should trigger a getHotel function whenever element of a list is clicked', () => {
@@ -81,7 +114,7 @@ describe('Hotel', () => {
       document.getElementsByClassName('list__element')[0].addEventListener('click', buttonClickSuccessSpy);
       document.getElementsByClassName('list__element')[0].click();
       expect(document.getElementsByClassName('js-name')[0].innerHTML).to.be.empty;
-      hotel.addEvents('hotels-list', 'list__element');
+      hotel.addEvents('http://foo.com', 'hotels-list', 'hotel-data', 'list__element');
       expect(buttonClickSuccessSpy.callCount).to.equal(1);
       expect(document.getElementsByClassName('js-name')[0].innerHTML).to.not.be.empty;
     });

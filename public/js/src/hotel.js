@@ -3,9 +3,18 @@ class Hotel {
     this.data = null;
   }
   
-  addEvents(id, url, targetId, clName = null){
+  addEvents(url, id, targetId, clName = null){
     if(arguments.length < 3){
-      throw new Error('Function getHotel needs two arguments');
+      throw new Error('Function addEvents needs at least three arguments');
+    }
+    
+    if(typeof url !== 'string' || url.length === 0){
+      throw new Error('Function addEvents needs a valid URL');
+    }
+    
+    let valUrl = /^(https?:)?\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}(\.[a-z]{2,4})?\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/;
+    if(!url.match(valUrl)){
+      throw new Error('Function addEvents needs a valid URL');
     }
     
     if(typeof id !== 'string' || id.length === 0) {
@@ -16,7 +25,15 @@ class Hotel {
       throw new TypeError('Argument id: '+id+' has wrong format'); 
     }
     
-    if(clName !== null && typeof clName !== 'string' || clName.length === 0) {
+    if(typeof targetId !== 'string' || targetId.length === 0) {
+      throw new TypeError('Argument targetId '+targetId+' given to function setList is not a string'); 
+    }
+    
+    if(!targetId.match(/^\w\S*$/i)){
+      throw new TypeError('Argument targetId: '+targetId+' has wrong format'); 
+    }
+    
+    if(clName !== null && (typeof clName !== 'string' || clName.length === 0)) {
       throw new TypeError('Argument class '+clName+' given to function setList is not a string'); 
     }
     
@@ -27,29 +44,50 @@ class Hotel {
 
     let event = 'click',
         rootEl = document.getElementById(id), 
+        targetEl = document.getElementById(targetId), 
         els;
 
     if(rootEl === null) {
       throw new Error('Element with given id '+id+' doesn\'t exist');
     }
+    
+    if(targetEl === null) {
+      throw new Error('Element with given target id '+targetId+' doesn\'t exist');
+    }
+    
+    console.log('rootEl', rootEl);
+    console.log('targetEl', targetEl);
+
+    console.log(document);
 
     if(clName === null){
-      els = rootEl.getChildren();
+      console.log('a');
+      els = document.getElementsByTagName('li');
     } else {
-      els = rootEl.getElementsByClassName(clName);
+      console.log('b');
+      els = document.getElementsByClassName(clName);
     }
+    
+    var list = document.getElementsByTagName('li');
+    console.log('---', els, els.item(0));
+    Array.prototype.forEach.call(list, a => {
+      console.log(a);
+      a.style.fontFamily = 'Comic Sans MS';
+    });
     
     let _self = this;
 
-    for(let i = 0; i < els.length; i++) {
+    for(let i =0; i<els.length; i++) {
+      console.log('petla', i, els[i]);
       els[i].addEventListener(event, function list(){
+        console.log('Klik', this);
         let idH = this.dataset.id;
         _self.getHotel(url, idH).then(()=>{
           _self.setHotel();
         });
       });
     }
-    console.log('Klik', this);
+    console.log('Hotel', this);
   }
 
   /**

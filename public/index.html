@@ -11,7 +11,7 @@
         <span class="off-screen">lastminute.com</span>
       </h1>
 			<div class="hotels" id="hotels-list">
-				<div class="hotels__hotel">
+				<div class="hotels__hotel" id="hotel-data">
 					<div class="hotel__image"></div>
 					<div class="hotel__details">
 						<h2 class="hotel__name">Hotel Sunny Palms</h2>
@@ -24,10 +24,20 @@
 			</div>
 		</section>
     <script src="js/src/hotels.js"></script>
+    <script src="js/src/hotel.js"></script>
     <script>
-      var hotels = new Hotels();
+      document.addEventListener("DOMContentLoaded", function(event) {
+    console.log("DOM fully loaded and parsed");
+    var hotels = new Hotels();
+      var hotel = new Hotel();
       console.log('hotels', hotels);
-      hotels.createList('http://localhost:8765/api/hotels', 'hotels-list', 'hotels__list', 'list__element');
+      hotels.createList('http://localhost:8765/api/hotels', 'hotels-list', 'hotels__list', 'list__element')
+        .then(
+          ()=>{hotel.addEvents('http://localhost:8765/api/hotels', 'hotels-list', 'hotel-data');},
+          (error)=>{console.log(error);}
+        );
+  });
+      
     </script>
   </body>
 </html>

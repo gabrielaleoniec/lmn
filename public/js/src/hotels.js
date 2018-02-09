@@ -4,9 +4,21 @@ class Hotels {
   }
   
   createList(url, id, clP = null, clCh = null, prepend = true){
-    this.getList(url).then(
-      ()=>this.setList(id, clP, clCh, prepend),
-      (error)=>console.log(error));
+    return new Promise(function(resolve, reject){
+      this.getList(url).then(
+        ()=>{
+          try {
+            this.setList(id, clP, clCh, prepend);
+            resolve();
+          } catch(err) {
+            reject(err);
+          }
+        },
+        (error)=>{
+          reject(error);
+        }
+      );
+    }.bind(this));
   }
 
   /**
