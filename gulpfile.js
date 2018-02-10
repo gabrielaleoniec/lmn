@@ -6,11 +6,13 @@
 var gulp = require('gulp'),
 		sass = require('gulp-sass'),
 		sassLint = require('gulp-sass-lint'),
-		fs = require('fs');
+		fs = require('fs'),
+    jshint = require('gulp-jshint');;
 
 var dir = './public/',
 		dir_css = dir+'css/',
 		dir_sass = dir_css+'sass/';
+		dir_js = dir+'js/';
 
 fs.lstat(dir, (err) => {
     if(err)
@@ -41,6 +43,12 @@ gulp.task('sasslint', function () {
 		}))
     .pipe(sassLint.format())
     .pipe(sassLint.failOnError());
+});
+
+gulp.task('lint', function() {
+  return gulp.src(dir_js+'/src/*.js')
+    .pipe(jshint())
+    .pipe(jshint.reporter('default'));
 });
  
 gulp.task('sass', ['sasslint'], function () {

@@ -12,11 +12,11 @@
       </h1>
 			<div class="hotels" id="hotels-list">
 				<div class="hotels__hotel" id="hotel-data">
-					<div class="hotel__image"></div>
+					<div class="hotel__image js-imgURL"></div>
 					<div class="hotel__details">
-						<h2 class="hotel__name">Hotel Sunny Palms</h2>
+						<h2 class="hotel__name js-name js-rating">Hotel Sunny Palms</h2>
 						<div class="hotel__price">
-							<div class="price__value">&pound;108.00</div>
+							<div class="price__value js-price">&pound;108.00</div>
 							<div class="price__info">Total hotel stay</div>
 						</div>
 					</div>
@@ -26,14 +26,15 @@
     <script src="js/src/hotels.js"></script>
     <script src="js/src/hotel.js"></script>
     <script>
-      document.addEventListener("DOMContentLoaded", function(event) {
+    document.addEventListener("DOMContentLoaded", function(event) {
     console.log("DOM fully loaded and parsed");
     var hotels = new Hotels();
       var hotel = new Hotel();
-      console.log('hotels', hotels);
       hotels.createList('http://localhost:8765/api/hotels', 'hotels-list', 'hotels__list', 'list__element')
         .then(
-          ()=>{hotel.addEvents('http://localhost:8765/api/hotels', 'hotels-list', 'hotel-data');},
+          ()=>{
+            console.log('hotels', hotels.list);
+            hotel.addEvents('http://localhost:8765/api/hotels', 'hotels-list', 'hotel-data');},
           (error)=>{console.log(error);}
         );
   });

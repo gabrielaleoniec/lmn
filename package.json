@@ -4,7 +4,7 @@
   "description": "FE developer assignment for lastminute.com",
   "scripts": {
     "start": "node ./scripts/dyson.js",
-    "test": "./node_modules/.bin/mocha"
+    "test": "nyc ./node_modules/.bin/mocha --timeout=3000"
   },
   "author": "lastminute.com",
   "private": true,
@@ -13,14 +13,17 @@
     "dyson": "git+https://github.com/webpro/dyson.git",
     "express": "^4.16.2",
     "gulp": "^3.9.1",
+    "gulp-jshint": "^2.1.0",
     "gulp-sass": "^3.1.0",
     "gulp-sass-lint": "^1.3.4",
     "istanbul": "^0.4.5",
     "jasmine": "^2.9.0",
     "jest": "^22.1.4",
     "jsdom": "^11.6.2",
+    "jshint": "^2.9.5",
     "mocha": "^5.0.0",
     "nock": "^9.1.6",
+    "nyc": "^11.4.1",
     "sinon": "^4.2.2"
   }
 }

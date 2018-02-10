@@ -27,18 +27,100 @@ const dom1 = new JSDOM(
 );
 
 describe('Hotel', () => {
+  let hotel,
+      sandbox = sinon.createSandbox();
+    
   it('should exist', () => {
 			expect(Hotel).to.be.a('function');
 	});
   
+  describe('#exFuns', () => {
+    beforeEach(function() {
+      hotel = new Hotel();
+
+      global.window = dom1.window;
+
+      this.xhr = sandbox.useFakeXMLHttpRequest();
+      window.XMLHttpRequest = this.xhr; 
+      var requests = this.requests = [];
+
+      this.xhr.onCreate = function (xhr) {
+          requests.push(xhr);
+      };
+    });
+
+    afterEach(function() {
+      this.xhr.restore();
+    });
+    
+    it('should throw if too little arguments are passed', () => {
+      let msg = 'Function exFuns needs three arguments';
+      expect(()=>hotel.exFuns()).to.throw(Error, msg);
+    });
+    
+    it('should throw if URL passed to the function is wrong', () => {
+      let msg = 'Function exFuns needs a valid URL';
+      expect(()=>hotel.exFuns(0, '3', 'hotel-data')).to.throw(Error, msg);
+      expect(()=>hotel.exFuns('', '3', 'hotel-data')).to.throw(Error, msg);
+      expect(()=>hotel.exFuns('abc', '3', 'hotel-data')).to.throw(Error, msg);
+      expect(()=>hotel.exFuns('abc.com', '3', 'hotel-data')).to.throw(Error, msg);
+      expect(()=>hotel.exFuns('http://localhost', '3', 'hotel-data')).to.not.throw;
+      expect(()=>hotel.exFuns('http://localhost:8765', '3', 'hotel-data')).to.not.throw;
+      expect(()=>hotel.exFuns('http://localhost:8765/api/hotels', '3', 'hotel-data')).to.not.throw;
+      expect(()=>hotel.exFuns('http://localhost:8765/api/hotels/3', '3', 'hotel-data')).to.not.throw;
+      expect(()=>hotel.exFuns('http://api.lastminute.com/hotels', '3', 'hotel-data')).to.not.throw;
+      expect(()=>hotel.exFuns('http://foo.com', '3', 'hotel-data')).to.not.throw;
+    });
+       
+    it('should throw an error when given argument id is not valid', () => {
+      let id = 'wrong id',
+          error_msg = 'Function exFuns needs an id of the hotel';
+      expect(() => hotel.exFuns('http://foo.com', id, 'foo')).to.throw(TypeError, error_msg);
+    });
+    
+    it('should throw an error when given argument target id is not a string', () => {
+      let id = 3,
+          error_msg = 'Argument targetId '+id+' given to function exFuns is not a string';
+      expect(() => hotel.exFuns('http://foo.com', '1', id)).to.throw(TypeError, error_msg);
+    });
+    
+    it('should throw an error when given argument target id is not valid', () => {
+      let id = 'wrong id',
+          error_msg = 'Argument targetId: '+id+' has wrong format';
+      expect(() => hotel.exFuns('http://foo.com', '1', id)).to.throw(Error, error_msg);
+    });
+    
+    it('it should call function getHotel given correct arguments', ()=>{
+      let getHotSpy = sandbox.spy(hotel, "getHotel"),
+          setHotSpy = sandbox.spy(hotel, "setHotel");
+      expect(() => hotel.exFuns('http://foo.com', '1', 'hotel-data')).to.not.throw;
+      
+      hotel.exFuns('http://foo.com', '1', 'hotel-data');
+      
+      expect(getHotSpy.callCount).to.equal(1);
+      expect(getHotSpy.withArgs('http://foo.com', '1').calledOnce).to.be.true;
+      getHotSpy.withArgs('http://foo.com', '1').then(()=>{
+        expect(setHotSpy.callCount).to.equal(1);
+      });
+      
+    });
+  });
+  
   describe('#addEvents', () => {
-    let hotel;
+    let hotel,
+        sandbox = sinon.createSandbox();
     
     beforeEach(function() {
       hotel = new Hotel();
+      
+      global.window = dom1.window;
+      
     });
     
-    it('should throw if no arguments are passed', () => {
+    afterEach(function() {
+    });
+    
+    it('should throw if too little arguments are passed', () => {
       let msg = 'Function addEvents needs at least three arguments';
       expect(()=>hotel.addEvents()).to.throw(Error, msg);
     });
@@ -54,41 +136,60 @@ describe('Hotel', () => {
       expect(()=>hotel.addEvents('http://localhost:8765/api/hotels', '3', 'hotel-data')).to.not.throw;
       expect(()=>hotel.addEvents('http://localhost:8765/api/hotels/3', '3', 'hotel-data')).to.not.throw;
       expect(()=>hotel.addEvents('http://api.lastminute.com/hotels', '3', 'hotel-data')).to.not.throw;
+      expect(()=>hotel.addEvents('http://foo.com', '3', 'hotel-data')).to.not.throw;
     });
     
     it('should throw an error when given argument id is not a string', () => {
       let id = 3,
-          error_msg = 'Argument id '+id+' given to function setList is not a string';
+          error_msg = 'Argument id '+id+' given to function addEvents is not a string';
       expect(() => hotel.addEvents('http://foo.com', id, 'foo')).to.throw(TypeError, error_msg);
     });
     
     it('should throw an error when given argument id is not valid', () => {
       let id = 'wrong id',
           error_msg = 'Argument id: '+id+' has wrong format';
-      expect(() => hotel.addEvents('http://foo.com', id, 'foo')).to.throw(TypeError, error_msg);
+      expect(() => hotel.addEvents('http://foo.com', id, 'foo')).to.throw(Error, error_msg);
     });
     
     it('should throw an error when given argument target id is not a string', () => {
       let id = 3,
-          error_msg = 'Argument targetId '+id+' given to function setList is not a string';
+          error_msg = 'Argument targetId '+id+' given to function addEvents is not a string';
       expect(() => hotel.addEvents('http://foo.com', 'hotels-list', id, 'foo')).to.throw(TypeError, error_msg);
     });
     
     it('should throw an error when given argument target id is not valid', () => {
       let id = 'wrong id',
           error_msg = 'Argument targetId: '+id+' has wrong format';
-      expect(() => hotel.addEvents('http://foo.com', 'hotels-list', id, 'foo')).to.throw(TypeError, error_msg);
+      expect(() => hotel.addEvents('http://foo.com', 'hotels-list', id, 'foo')).to.throw(Error, error_msg);
     });
     
     it('should throw an error when given argument class is not a string', () => {
       let clName = 3,
-          error_msg = 'Argument class '+clName+' given to function setList is not a string';
+          error_msg = 'Argument class '+clName+' given to function addEvents is not a string';
       expect(() => hotel.addEvents('http://foo.com', 'hotels-list', 'hotel-data', clName)).to.throw(TypeError, error_msg);
     });
     
     it('should throw an error when given argument class is not valid', ()=>{
       let error_msg = 'Given class name is not valid';
-      expect(() => hotel.addEvents('http://foo.com', 'hotels-list', 'hotel-data', 'wrong class')).to.throw(TypeError, error_msg);
+      expect(() => hotel.addEvents('http://foo.com', 'hotels-list', 'hotel-data', 'wrong class')).to.throw(Error, error_msg);
+    });
+    
+    it('should call document.getElementsByTagName if class is null', ()=>{
+      global.document = dom1.window.document;
+      
+      let getElByTagSpy = sandbox.spy(document, "getElementsByTagName");
+      hotel.addEvents('http://foo.com', 'hotels-list', 'hotel-data', null);
+      expect(getElByTagSpy.callCount).to.equal(1);
+      expect(getElByTagSpy.withArgs('li').calledOnce).to.be.true;
+    });
+    
+    it('should call document.getElementsByClassName if class is NOT null', ()=>{
+      global.document = dom1.window.document;
+      
+      let getElByClSpy = sandbox.spy(document, "getElementsByClassName");
+      hotel.addEvents('http://foo.com', 'hotels-list', 'hotel-data', 'list__element');
+      expect(getElByClSpy.callCount).to.equal(1);
+      expect(getElByClSpy.withArgs('list__element').calledOnce).to.be.true;
     });
     
     it('should throw an error when element with given id doesn\'t exist', () => {
@@ -107,16 +208,21 @@ describe('Hotel', () => {
       expect(() => hotel.addEvents('http://foo.com', 'hotels-list', id)).to.throw(Error, error_msg);
     });
     
-    it('should trigger a getHotel function whenever element of a list is clicked', () => {
+    it('should trigger a exFuns function whenever element of a list is clicked', () => {
       global.document = dom1.window.document;
-      let buttonClickSuccessSpy = sinon.spy();
+      let buttonClickSuccessSpy = sandbox.spy(),
+          getHlSpy = sandbox.spy(hotel, "exFuns");
       
       document.getElementsByClassName('list__element')[0].addEventListener('click', buttonClickSuccessSpy);
-      document.getElementsByClassName('list__element')[0].click();
+      
       expect(document.getElementsByClassName('js-name')[0].innerHTML).to.be.empty;
       hotel.addEvents('http://foo.com', 'hotels-list', 'hotel-data', 'list__element');
+      //expect(document.getElementsByClassName
+      document.getElementsByClassName('list__element')[0].click();
+      
       expect(buttonClickSuccessSpy.callCount).to.equal(1);
-      expect(document.getElementsByClassName('js-name')[0].innerHTML).to.not.be.empty;
+      expect(hotel.exFuns.calledOnce).to.be.true;
+      expect(getHlSpy.withArgs('http://foo.com', '1', 'hotel-data').calledOnce).to.be.true;
     });
   });
   
@@ -144,7 +250,7 @@ describe('Hotel', () => {
       this.xhr.restore();
     });
     
-    it('should throw if no arguments are passed', () => {
+    it('should throw if too little arguments are passed', () => {
       let msg = 'Function getHotel needs two arguments';
       expect(()=>hotel.getHotel()).to.throw(Error, msg);
     });
@@ -164,7 +270,7 @@ describe('Hotel', () => {
     
     it('should throw if id passed to the function of a hotel is wrong', () => {
       let msg = 'Function getHotel needs an id of the hotel';
-      expect(()=>hotel.getHotel('http://foo.com', 3)).to.throw(Error, msg);
+      expect(()=>hotel.getHotel('http://foo.com', 3)).to.not.throw(Error, msg);
       expect(()=>hotel.getHotel('http://foo.com', '')).to.throw(Error, msg);
       expect(()=>hotel.getHotel('http://foo.com', 'wrong id')).to.throw(Error, msg);
       expect(()=>hotel.getHotel('http://foo.com', '3')).to.not.throw;
@@ -263,10 +369,24 @@ describe('Hotel', () => {
           "rating":5,
           "price":108,
           "id":1});
+
+      
+      this.xhr = sandbox.useFakeXMLHttpRequest();
+      window.XMLHttpRequest = this.xhr; 
+      var requests = this.requests = [];
+
+      this.xhr.onCreate = function (xhr) {
+          requests.push(xhr);
+      };
     });
     
     afterEach(function(){
       sandbox.restore();
+    });
+    
+    it('should throw if too little arguments are passed', () => {
+      let msg = 'Function setHotel needs at least one argument';
+      expect(()=>hotel.setHotel()).to.throw(Error, msg);
     });
     
     it('should throw an error when given argument id is not a string', () => {
@@ -278,13 +398,13 @@ describe('Hotel', () => {
     it('should throw an error when given argument id is not valid', () => {
       let id = 'wrong id',
           error_msg = 'Argument id: '+id+' has wrong format';
-      expect(() => hotel.setHotel(id)).to.throw(TypeError, error_msg);
+      expect(() => hotel.setHotel(id)).to.throw(Error, error_msg);
     });
     
     it('should throw an error when hotel.data is not a JSON object', () => {
       let error_msg = 'Property this.data is not a valid object';
       sandbox.stub(hotel, 'data').value(null);
-      expect(() => hotel.setHotel('foo')).to.throw(TypeError, error_msg);
+      expect(() => hotel.setHotel('foo')).to.throw(Error, error_msg);
     });
     
     it('should throw if object classes is not null, but is a wrong object', ()=>{
@@ -322,21 +442,15 @@ describe('Hotel', () => {
       expect(document.getElementsByClassName('js-name')[0].innerHTML).to.be.empty;
       expect(document.getElementsByClassName('js-price')[0].innerHTML).to.be.empty;
       expect(document.getElementsByClassName('js-imgURL')[0].src).to.be.empty;
-      expect(document.getElementsByClassName('js-rating')[0].className).to.not.contain('rating-5');
+      expect(document.getElementsByClassName('js-rating')[0].className).to.not.contain('rating--5');
       hotel.setHotel('hotel-data', classes);
       expect(document.getElementsByClassName('js-name')[0].innerHTML).to.be.equal(hotel.data['name']);
-      expect(document.getElementsByClassName('js-price')[0].innerHTML).to.be.equal(hotel.data['price']+'');
+      expect(document.getElementsByClassName('js-price')[0].innerHTML).to.be.equal('£'+hotel.data['price'].toFixed(2));
       expect(document.getElementsByClassName('js-imgURL')[0].src).to.be.equal(hotel.data['imgUrl']);
-      expect(document.getElementsByClassName('js-rating')[0].className).to.contain('rating-5');
+      expect(document.getElementsByClassName('js-rating')[0].className).to.contain('rating--5');
       expect(document.getElementsByClassName('js-name')[0].className).to.contain(classes['name']);
       expect(document.getElementsByClassName('js-price')[0].className).to.contain(classes['price']);
       expect(document.getElementsByClassName('js-imgUrl')[0].className).to.contain(classes['imgUrl']);
     });
   });
 });
-
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-  module.exports = Hotel;
-} else {
-  window.Hotels = Hotel;
-}
