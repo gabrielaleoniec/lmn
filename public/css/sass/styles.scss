@@ -28,8 +28,6 @@ html {
 }
 
 .section {
-  background: $c-white url('/desktop_test.jpg') no-repeat top left;
-
   &__header {
     @include rem(font-size, 25px);
     @include rem(padding, 10px);
@@ -40,19 +38,12 @@ html {
     color: $c-white;
     line-height: 1;
     margin: 0;
-    opacity: .5; //TODO: remove
     text-align: center;
   }
 }
 
 .hotels {
   //background-color: $c-white;
-  @include for-size('tablet-up') {
-    display: flex;
-    padding: 35px 33px 48px;
-  }
-  opacity: .6; //TODO: remove
-
   &__list {
     //background-color: $c-grey;
     display: block;
@@ -107,11 +98,20 @@ html {
     padding: 0;
 
     &::after {
-      @include rem(height, 14px);
+      @include rem(height, 18px);
       background: url('/ratings.png') no-repeat center top;
+      background-position-y: 1px;
       content: '';
       display: block;
       width: 100%;
+    }
+    
+    @each $r in (1, 2, 3, 4, 5) {
+      &.rating--#{$r} {
+        &::after {
+          background-position-y: -($r * 18) + px;
+        }
+      }
     }
   }
 
@@ -169,12 +169,18 @@ html {
 
 @include for-size('tablet-up') {
   .hotels {
+    display: flex;
+    padding: 35px 32px 48px;
+
     &__list {
       margin-right: 3%;
-      width: 33%;
+      width: 44%;
     }
-    
+
     &__hotel {
+      @include rem(padding, 36px 32px);
+      border-bottom: 1px solid $c-grey2;
+      justify-content: left;
       width: 74%;
     }
   }
@@ -183,6 +189,29 @@ html {
     &__image {
       @include rem(height, 142px);
       @include rem(width, 170px);
+    }
+
+    &__details {
+      @include rem(margin-left, 35px);
+
+      margin-right: 0;
+      width: calc(100% - 205px);
+      width: calc(100% - 20.5rem); // sass-lint:disable-line no-duplicate-properties
+    }
+
+    &__price {
+      bottom: 0;
+      right: 0;
+    }
+  }
+
+  .list {
+    &__element {
+      border: 1px solid $c-grey2;
+
+      &:first-of-type {
+        border-top-width: 1px;
+      }
     }
   }
 }
