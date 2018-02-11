@@ -1,12 +1,14 @@
 'use strict';
-
-const expect = require('chai').expect;
-const assert = require('chai').assert;
+const chai = require('chai');
+const chaiAsPromised = require("chai-as-promised");
+const expect = chai.expect;
 const sinon = require('sinon');
-const src_dir = '../../public/js/src/';
-const Hotel = require(src_dir+'hotel.js');
+const q = require('q');
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
+
+const src_dir = '../../public/js/src/';
+const Hotel = require(src_dir+'hotel.js');
 
 const dom1 = new JSDOM(
   `<ul class="hotels__list" id="hotels-list">
@@ -47,6 +49,8 @@ describe('Hotel', () => {
       this.xhr.onCreate = function (xhr) {
           requests.push(xhr);
       };
+      
+      chai.use(chaiAsPromised);
     });
 
     afterEach(function() {
@@ -91,18 +95,19 @@ describe('Hotel', () => {
     });
     
     it('it should call function getHotel given correct arguments', ()=>{
-      let getHotSpy = sandbox.spy(hotel, "getHotel"),
-          setHotSpy = sandbox.spy(hotel, "setHotel");
-      expect(() => hotel.exFuns('http://foo.com', '1', 'hotel-data')).to.not.throw;
+      let getHtlSpy = sandbox.spy(hotel, "getHotel"),
+          hotel_JS = JSON.stringify({ 
+            "name":"Hotel Sunny Palms",
+            "imgUrl":"images/sunny.jpg",
+            "rating":5,
+            "price":108,
+            "id":1});
       
+      expect(() => hotel.exFuns('http://foo.com', '1', 'hotel-data')).to.not.throw;
       hotel.exFuns('http://foo.com', '1', 'hotel-data');
       
-      expect(getHotSpy.callCount).to.equal(1);
-      expect(getHotSpy.withArgs('http://foo.com', '1').calledOnce).to.be.true;
-      getHotSpy.withArgs('http://foo.com', '1').then(()=>{
-        expect(setHotSpy.callCount).to.equal(1);
-      });
-      
+      expect(getHtlSpy.callCount).to.equal(1);
+      expect(getHtlSpy.withArgs('http://foo.com', '1').calledOnce).to.be.true;
     });
   });
   

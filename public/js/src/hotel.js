@@ -34,9 +34,9 @@ class Hotel {
       throw new Error('Argument targetId: '+targetId+' has wrong format'); 
     }
 
-    return this.getHotel(url, idH)
+    this.getHotel(url, idH)
       .then(
-      ()=>{
+      (json)=>{
         this.setHotel(targetId);
       },
       (error)=>{console.log(error, idH);}
@@ -90,7 +90,7 @@ class Hotel {
     if(rootEl === null) {
       throw new Error('Element with given id '+id+' doesn\'t exist');
     }
-    
+       
     if(targetEl === null) {
       throw new Error('Element with given target id '+targetId+' doesn\'t exist');
     }
@@ -116,7 +116,7 @@ class Hotel {
    * Gets data of a hotel from given URL in a form of JSON
    * @param {string} url URL of the server responding with JSON with hotel data
    * @param {atring} idH id of the hotel we want to get
-   * @returns {Promise}
+   * @returns {Promise} JSON with hotel data
    */
   getHotel(url, idH){
     //URL validation
@@ -178,8 +178,9 @@ class Hotel {
   
   /**
    * Sets hotel data retrieved from JSON to a HTML node given by id
-   * @param {string} id
-   * @param {object} classes
+   * @param {string} id Id of the target element to which set hotel data
+   * @param {object} classes Object containg list of classes, 
+   *     where name of each key corresponds to the key in hotel data JSON
    * @returns {undefined}
    */
   setHotel(id, classes = null){
@@ -217,6 +218,8 @@ class Hotel {
       throw new Error('Element with given id '+id+' doesn\'t exist');
     }
        
+    rootEl.dataset.id = this.data[id];
+            
     for(let prop in this.data) {
       let els = rootEl.getElementsByClassName('js-'+prop);
 
