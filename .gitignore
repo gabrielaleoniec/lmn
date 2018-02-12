@@ -8,3 +8,4 @@ node_modules/
 /public/ratings.png
 /public/lmn-logo-white.svg
 /public/desktop_test.jpg
+/.nyc_output/
