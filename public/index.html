@@ -26,16 +26,21 @@
     <script src="js/src/hotels.js"></script>
     <script src="js/src/hotel.js"></script>
     <script>
-    document.addEventListener("DOMContentLoaded", function(event) {
+    document.addEventListener("DOMContentLoaded", function() {
     console.log("DOM fully loaded and parsed");
     var hotels = new Hotels();
       var hotel = new Hotel();
       hotels.createList('http://localhost:8765/api/hotels', 'hotels-list', 'hotels__list', 'list__element')
         .then(
           ()=>{
-            console.log('hotels', hotels.list);
             hotel.addEvents('http://localhost:8765/api/hotels', 'hotels-list', 'hotel-data');},
-          (error)=>{console.log(error);}
+          (error)=>{
+            if(typeof error === "error") {
+              console.log(error.message);
+            } else {
+              console.log(error);
+            }
+          }
         );
   });
       

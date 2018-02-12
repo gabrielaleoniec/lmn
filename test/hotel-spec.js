@@ -99,7 +99,6 @@ describe('Hotel', () => {
     });
     
     it('it should not resolve when there\'s problem with connection', function(done){
-      console.log('this 2', this.requests, this.response);
       let getHtlSpy = sinon.spy(hotel, "getHotel");
       
       hotel.exFuns(url, id, 'hotel-data')
@@ -129,7 +128,6 @@ describe('Hotel', () => {
       
       hotel.exFuns(url, id, wrong_id)
         .then((result)=>{
-          console.log('AAA');
           throw new Error('Promise was unexpectedly fulfilled. Result: ' + result);
         })
         .catch((error)=>{

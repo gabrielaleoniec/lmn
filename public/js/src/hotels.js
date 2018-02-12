@@ -4,12 +4,12 @@ class Hotels {
   }
   
   /**
-   * 
-   * @param {type} url
-   * @param {type} id
-   * @param {type} clP
-   * @param {type} clCh
-   * @param {type} prepend
+   * Glues the functions 
+   * @param {string} url
+   * @param {string} id
+   * @param {string} clP
+   * @param {string} clCh
+   * @param {boolean} prepend
    * @returns {Promise}
    */
   createList(url, id, clP = null, clCh = null, prepend = true){
@@ -56,7 +56,6 @@ class Hotels {
       this.getList(url)
         .then(
         ()=>{
-          this.setList(id, clP, clCh, prepend);
           try {
             this.setList(id, clP, clCh, prepend);
             resolve(true);
@@ -189,15 +188,12 @@ class Hotels {
       }
       
       if(prepend) {
-        console.log('firstChild', rootEl.childElementCount, rootEl.firstElementChild );
         rootEl.insertBefore(parentEl, rootEl.childNodes[0]);
       } else {
         rootEl.appendChild(parentEl);
       }
-      console.log('Final rootEl', rootEl);
       return rootEl.childElementCount;
     } else {
-      console.log('Element with given id '+id+' doesn\'t exist');
       throw new Error('Element with given id '+id+' doesn\'t exist');
     }
   }

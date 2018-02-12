@@ -1,12 +1,24 @@
 'use strict';
 const chai = require('chai');
+const chaiAsPromised = require("chai-as-promised");
 const expect = chai.expect;
 const sinon = require('sinon');
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
 
-const src_dir = '../../public/js/src/';
+const src_dir = '../public/js/src/';
 const Hotels = require(src_dir+'hotels.js');
+
+const template = `<div class="hotels" id="hotels-list">
+        <div id="hotel-data">
+          <img class="js-imgURL"/>
+          <div class="hotel__details">
+            <h2 class="js-name js-rating"></h2>
+            <div class="js-price"></div>
+            <div class="price__info">Total hotel stay</div>
+          </div>
+        </div>
+        </div>`;
 
 describe('Hotels', () => {   
 	it('should exist', () => {
@@ -32,36 +44,24 @@ describe('Hotels', () => {
       
     beforeEach(function() {
       hotels = new Hotels();
-      dom1 = new JSDOM(
-        `<div class="hotels" id="hotels-list">
-        <div id="hotel-data">
-          <img class="js-imgURL"/>
-          <div class="hotel__details">
-            <h2 class="js-name js-rating"></h2>
-            <div class="js-price"></div>
-            <div class="price__info">Total hotel stay</div>
-          </div>
-        </div>
-        </div>`
-      );
+      dom1 = new JSDOM(template);
       global.window = dom1.window;
+      global.document = dom1.window.document;
 
-this.server = sinon.createFakeServer();
-console.log('server 1', this.server);
       this.xhr = sandbox.useFakeXMLHttpRequest();
-
       window.XMLHttpRequest = this.xhr; 
       var requests = this.requests = [];
 
       this.xhr.onCreate = function (xhr) {
         requests.push(xhr);
       }.bind(this);
+      chai.use(chaiAsPromised);
     });
 
     afterEach(function() {
       this.xhr.restore();
-      this.server.restore();
       sandbox.restore();
+      window.close();
     });
 
     it('should throw if URL passed to the function is wrong', () => {
@@ -128,24 +128,56 @@ console.log('server 1', this.server);
       }
     });
     
-    console.log('server 2', this.server);
     it('should throw if given URL gives bad response', function(done) {
       let getListSpy = sandbox.spy(hotels, "getList");
-      
-      console.log('server 3', this.server);
    
-      hotels.createList(url, 'hotels-list').then(() => {
-        expect(getListSpy.calledOnce).to.be.true;
+      hotels.createList(url, 'hotels-list')
+      .then(() => {
         done();            
-			}, 
-      (error)=>{
+			})
+      .catch((error)=>{
         expect(getListSpy.calledOnce).to.be.true;
         expect(error).to.not.be.empty;
         expect(error).to.contain('404');
         done(); 
       });
       this.requests[0].respond(404, { 'Content-Type': 'text/json' }, wrong_hotels_list);
-      
+    });
+    
+    it('should throw if given bad id', function(done) {
+      let getListSpy = sandbox.spy(hotels, "getList"),
+          setListSpy = sandbox.spy(hotels, "setList");
+          
+      expect(() => hotels.createList(url, 'foo')).to.throw;
+   
+      hotels.createList(url, 'foo').then((result) => {
+        throw new Error('Promise was unexpectedly fulfilled. Result: ' + result);       
+			}, 
+      (error)=>{
+        expect(getListSpy.calledOnce).to.be.true;
+        expect(setListSpy.calledOnce).to.be.true;
+        expect(error).to.be.an('error');
+        expect(error.message).to.equal('Element with given id foo doesn\'t exist');
+        done(); 
+      });
+      this.requests[0].respond(200, { 'Content-Type': 'text/json' }, hotels_list);
+    });
+    
+    it('should resolve given correct arguments', function(done) {
+      let getListSpy = sandbox.spy(hotels, "getList"),
+          setListSpy = sandbox.spy(hotels, "setList"),
+          target_id = 'hotels-list';
+            
+      hotels.createList(url, 'hotels-list').then((result) => {
+        expect(getListSpy.withArgs(url).calledOnce, 'line 171').to.be.true;
+        expect(setListSpy.withArgs(target_id).calledOnce, 'line 172').to.be.true;
+        expect(result).to.equal(true);
+        done(); 
+			}, 
+      (error)=>{
+        throw new Error('Promise was unexpectedly rejected. Error: ' + error); 
+      });
+      this.requests[0].respond(200, { 'Content-Type': 'text/json' }, hotels_list);
     });
   });
     
@@ -167,18 +199,7 @@ console.log('server 1', this.server);
       
     beforeEach(function() {
       hotels = new Hotels();
-      dom1 = new JSDOM(
-        `<div class="hotels" id="hotels-list">
-        <div id="hotel-data">
-          <img class="js-imgURL"/>
-          <div class="hotel__details">
-            <h2 class="js-name js-rating"></h2>
-            <div class="js-price"></div>
-            <div class="price__info">Total hotel stay</div>
-          </div>
-        </div>
-        </div>`
-      );
+      dom1 = new JSDOM(template);
       global.window = dom1.window;
       
       this.xhr = sinon.useFakeXMLHttpRequest();
@@ -267,18 +288,7 @@ console.log('server 1', this.server);
     
     beforeEach(function(){
       hotels = new Hotels();
-      dom1 = new JSDOM(
-        `<div class="hotels" id="hotels-list">
-        <div id="hotel-data">
-          <img class="js-imgURL"/>
-          <div class="hotel__details">
-            <h2 class="js-name js-rating"></h2>
-            <div class="js-price"></div>
-            <div class="price__info">Total hotel stay</div>
-          </div>
-        </div>
-        </div>`
-      );
+      dom1 = new JSDOM(template);
       
       global.document = dom1.window.document;
     });
