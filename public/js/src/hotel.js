@@ -34,13 +34,22 @@ class Hotel {
       throw new Error('Argument targetId: '+targetId+' has wrong format'); 
     }
 
-    this.getHotel(url, idH)
-      .then(
-      (json)=>{
-        this.setHotel(targetId);
-      },
-      (error)=>{console.log(error, idH);}
-      );
+    return new Promise(function(resolve, reject){
+      this.getHotel(url, idH)
+        .then(
+        ()=>{
+          try {
+            this.setHotel(targetId);
+            resolve('ok');
+          } catch(e) {
+            reject(e);
+          }
+        },
+        (e)=>{
+          reject(e);
+        }
+        );
+    }.bind(this));
   }
   
   addEvents(url, id, targetId, clName = null){

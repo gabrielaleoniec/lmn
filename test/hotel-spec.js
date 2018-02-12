@@ -7,11 +7,9 @@ const q = require('q');
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
 
-const src_dir = '../../public/js/src/';
+const src_dir = '../public/js/src/';
 const Hotel = require(src_dir+'hotel.js');
-
-const dom1 = new JSDOM(
-  `<ul class="hotels__list" id="hotels-list">
+const template = `<ul class="hotels__list" id="hotels-list">
     <li data-id="1" class="list__element">Hotel Sunny Palms</li>
     <li data-id="2" class="list__element">Hotel Snowy Mountains</li>
     <li data-id="3" class="list__element">Hotel Windy Sails</li>
@@ -24,37 +22,43 @@ const dom1 = new JSDOM(
       <div class="js-price"></div>
       <div class="price__info">Total hotel stay</div>
     </div>
-  </div>`,
-  { runScripts: "dangerously" }
-);
+  </div>`;
 
-describe('Hotel', () => {
-  let hotel,
-      sandbox = sinon.createSandbox();
-    
+
+describe('Hotel', () => {   
   it('should exist', () => {
 			expect(Hotel).to.be.a('function');
 	});
   
   describe('#exFuns', () => {
+    let hotel,
+      sandbox = sinon.createSandbox(),
+      server = 'http://localhost:8765',
+      path = '/api/hotels/',
+      id = '1',
+      url = server+path,
+      dom1;
+      
     beforeEach(function() {
+      dom1 = new JSDOM(template);
       hotel = new Hotel();
 
       global.window = dom1.window;
+      global.document = dom1.window.document;
 
       this.xhr = sandbox.useFakeXMLHttpRequest();
       window.XMLHttpRequest = this.xhr; 
       var requests = this.requests = [];
 
       this.xhr.onCreate = function (xhr) {
-          requests.push(xhr);
-      };
-      
-      chai.use(chaiAsPromised);
+        requests.push(xhr);
+      }.bind(this);
     });
 
     afterEach(function() {
       this.xhr.restore();
+      sandbox.restore();
+      window.close();
     });
     
     it('should throw if too little arguments are passed', () => {
@@ -94,35 +98,93 @@ describe('Hotel', () => {
       expect(() => hotel.exFuns('http://foo.com', '1', id)).to.throw(Error, error_msg);
     });
     
-    it('it should call function getHotel given correct arguments', ()=>{
-      let getHtlSpy = sandbox.spy(hotel, "getHotel"),
+    it('it should not resolve when there\'s problem with connection', function(done){
+      console.log('this 2', this.requests, this.response);
+      let getHtlSpy = sinon.spy(hotel, "getHotel");
+      
+      hotel.exFuns(url, id, 'hotel-data')
+        .then((result)=>{
+          throw new Error('Promise was unexpectedly fulfilled. Result: ' + result);
+        })
+        .catch((error)=>{
+          expect(getHtlSpy.withArgs(url, id).calledOnce).to.be.true;
+          expect(error).to.not.be.empty;
+          expect(error).to.contain('404');
+          done();
+        });
+      
+      this.requests[0].respond(404, { 'Content-Type': 'text/json' }, "Page not found");
+    });
+    
+    it('it should not resolve when an element with given id doesn\'t exist', function(done){
+      let getHtlSpy = sinon.spy(hotel, "getHotel"),
+          setHtlSpy = sinon.spy(hotel, "setHotel"),
           hotel_JS = JSON.stringify({ 
             "name":"Hotel Sunny Palms",
             "imgUrl":"images/sunny.jpg",
             "rating":5,
             "price":108,
-            "id":1});
+            "id":1}),
+          wrong_id = 'foo';
       
-      expect(() => hotel.exFuns('http://foo.com', '1', 'hotel-data')).to.not.throw;
-      hotel.exFuns('http://foo.com', '1', 'hotel-data');
+      hotel.exFuns(url, id, wrong_id)
+        .then((result)=>{
+          console.log('AAA');
+          throw new Error('Promise was unexpectedly fulfilled. Result: ' + result);
+        })
+        .catch((error)=>{
+          expect(getHtlSpy.withArgs(url, id).calledOnce).to.be.true;
+          expect(setHtlSpy.withArgs(wrong_id).calledOnce).to.be.true;
+          expect(error).to.be.an('error');;
+          expect(error.message).to.equal('Element with given id foo doesn\'t exist');
+          done();
+        });
       
-      expect(getHtlSpy.callCount).to.equal(1);
-      expect(getHtlSpy.withArgs('http://foo.com', '1').calledOnce).to.be.true;
+      this.requests[0].respond(200, { 'Content-Type': 'text/json' }, hotel_JS);
+    });
+    
+    it('it should resolve given correct arguments', function(done){
+      let getHtlSpy = sinon.spy(hotel, "getHotel"),
+          setHtlSpy = sinon.spy(hotel, "setHotel"),
+          hotel_JS = JSON.stringify({ 
+            "name":"Hotel Sunny Palms",
+            "imgUrl":"images/sunny.jpg",
+            "rating":5,
+            "price":108,
+            "id":1}),
+          target_id = 'hotel-data';
+      
+      hotel.exFuns(url, id, target_id)
+        .then((result)=>{
+          expect(getHtlSpy.withArgs(url, id).calledOnce).to.be.true;
+          expect(setHtlSpy.withArgs(target_id).calledOnce).to.be.true;
+          expect(result).to.equal('ok');;
+          done();
+        })
+        .catch((error)=>{
+          throw new Error('Promise was unexpectedly unfulfilled. Result: ' + error);
+          done();
+        });
+      
+      this.requests[0].respond(200, { 'Content-Type': 'text/json' }, hotel_JS);
     });
   });
   
   describe('#addEvents', () => {
     let hotel,
-        sandbox = sinon.createSandbox();
+        sandbox = sinon.createSandbox(),
+        dom1;
     
     beforeEach(function() {
+      dom1 = new JSDOM(template);
       hotel = new Hotel();
       
       global.window = dom1.window;
-      
+      global.document = dom1.window.document;
     });
     
     afterEach(function() {
+      window.close();
     });
     
     it('should throw if too little arguments are passed', () => {
@@ -180,26 +242,18 @@ describe('Hotel', () => {
     });
     
     it('should call document.getElementsByTagName if class is null', ()=>{
-      global.document = dom1.window.document;
-      
       let getElByTagSpy = sandbox.spy(document, "getElementsByTagName");
       hotel.addEvents('http://foo.com', 'hotels-list', 'hotel-data', null);
-      expect(getElByTagSpy.callCount).to.equal(1);
       expect(getElByTagSpy.withArgs('li').calledOnce).to.be.true;
     });
     
-    it('should call document.getElementsByClassName if class is NOT null', ()=>{
-      global.document = dom1.window.document;
-      
+    it('should call document.getElementsByClassName if class is NOT null', ()=>{     
       let getElByClSpy = sandbox.spy(document, "getElementsByClassName");
       hotel.addEvents('http://foo.com', 'hotels-list', 'hotel-data', 'list__element');
-      expect(getElByClSpy.callCount).to.equal(1);
       expect(getElByClSpy.withArgs('list__element').calledOnce).to.be.true;
     });
     
     it('should throw an error when element with given id doesn\'t exist', () => {
-      global.document = dom1.window.document;
-
       let id = 'foo',
           error_msg = 'Element with given id '+id+' doesn\'t exist';
       expect(() => hotel.addEvents('http://foo.com', id, 'hotel-data')).to.throw(Error, error_msg);
@@ -214,12 +268,12 @@ describe('Hotel', () => {
     });
     
     it('should trigger a exFuns function whenever element of a list is clicked', () => {
-      global.document = dom1.window.document;
       let buttonClickSuccessSpy = sandbox.spy(),
           getHlSpy = sandbox.spy(hotel, "exFuns");
       
       document.getElementsByClassName('list__element')[0].addEventListener('click', buttonClickSuccessSpy);
       
+
       expect(document.getElementsByClassName('js-name')[0].innerHTML).to.be.empty;
       hotel.addEvents('http://foo.com', 'hotels-list', 'hotel-data', 'list__element');
       //expect(document.getElementsByClassName
@@ -236,9 +290,11 @@ describe('Hotel', () => {
         server = 'http://localhost:8765',
         path = '/api/hotels/',
         id = '1',
-        url = server+path;
+        url = server+path,
+        dom1;
     
     beforeEach(function() {
+      dom1 = new JSDOM(template);
       hotel = new Hotel();
 			global.window = dom1.window;
       
@@ -253,6 +309,7 @@ describe('Hotel', () => {
 
     afterEach(function() {
       this.xhr.restore();
+      window.close();
     });
     
     it('should throw if too little arguments are passed', () => {
@@ -363,9 +420,12 @@ describe('Hotel', () => {
   describe('#setHotel', () => {
     let hotel,
         sandbox = sinon.createSandbox(), 
-        hotel_JS;
+        hotel_JS,
+        dom1;
     
     beforeEach(function(){
+      dom1 = new JSDOM(template);
+      
       hotel = new Hotel();
       
       hotel_JS = JSON.stringify({ 
@@ -375,7 +435,7 @@ describe('Hotel', () => {
           "price":108,
           "id":1});
 
-      
+      global.document = dom1.window.document;
       this.xhr = sandbox.useFakeXMLHttpRequest();
       window.XMLHttpRequest = this.xhr; 
       var requests = this.requests = [];
@@ -387,6 +447,7 @@ describe('Hotel', () => {
     
     afterEach(function(){
       sandbox.restore();
+      window.close();
     });
     
     it('should throw if too little arguments are passed', () => {
@@ -426,8 +487,6 @@ describe('Hotel', () => {
     
     it('should throw an error when element with given id doesn\'t exist', () => {
       sandbox.stub(hotel, 'data').value(JSON.parse(hotel_JS));
-      global.document = dom1.window.document;
-
       let id = 'foo',
           error_msg = 'Element with given id '+id+' doesn\'t exist';
       expect(() => hotel.setHotel('foo')).to.throw(Error, error_msg);
@@ -440,7 +499,6 @@ describe('Hotel', () => {
         'price': 'price__value'
       };
       sandbox.stub(hotel, 'data').value(JSON.parse(hotel_JS));
-      global.document = dom1.window.document;
       
       expect(() => hotel.setHotel('hotel-data', classes)).to.not.throw;
 
