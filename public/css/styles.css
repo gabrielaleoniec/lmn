@@ -49,6 +49,7 @@ html {
   background: #eee linear-gradient(180deg, #fff 0, #e7e7e7 100%);
   border-bottom: 1px solid #9b9b9b;
   border-top: 1px solid #b3b3b3;
+  cursor: pointer;
   display: block;
   line-height: 1;
   list-style-type: none;
@@ -62,7 +63,7 @@ html {
   width: 124px;
   width: 12.4rem;
   background-color: #e7e7e7;
-  background-size: contain; }
+  background-size: cover; }
 
 .hotel__details {
   margin-top: 10px;

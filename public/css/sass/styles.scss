@@ -67,6 +67,7 @@ html {
     background: $c-grey linear-gradient(180deg, $c-white 0, $c-grey1 100%);
     border-bottom: 1px solid $c-grey2;
     border-top: 1px solid $c-grey3;
+    cursor: pointer;
     display: block;
     line-height: 1;
     list-style-type: none;
@@ -83,7 +84,7 @@ html {
     @include rem(height, 105px);
     @include rem(width, 124px);
     background-color: $c-grey1;
-    background-size: contain;
+    background-size: cover;
   }
 
   &__details {
@@ -105,7 +106,7 @@ html {
       display: block;
       width: 100%;
     }
-    
+
     @each $r in (1, 2, 3, 4, 5) {
       &.rating--#{$r} {
         &::after {

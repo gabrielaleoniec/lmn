@@ -18,7 +18,7 @@ class Hotel {
     }
     
     if(typeof idH === "number"){
-      idH+='';
+      idH = idH.toString();
     }
     
     // Id validataion
@@ -242,7 +242,12 @@ class Hotel {
             els[i].innerHTML = '&pound;'+this.data[prop].toFixed(2);
           }
           if(prop === 'imgUrl') {
-            els[i].setAttribute("src", this.data[prop]);
+            
+            if(els[i].nodeName === 'IMG') {
+              els[i].setAttribute("src", 'http://localhost:8765/api/'+this.data[prop]);
+            } else {             
+              els[i].style.backgroundImage = 'url(\'http://localhost:8765/api/'+this.data[prop]+'\')';
+            }
           }
           if(prop === 'rating') {
             let cl = els[i].className.replace(/ rating--[0-9]/, '');
