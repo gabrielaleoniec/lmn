@@ -7,7 +7,7 @@ const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
 
 const src_dir = '../public/js/src/';
-const Hotels = require(src_dir+'hotels.js');
+const Hotels = require(src_dir+'Hotels.js');
 
 const template = `<div class="hotels" id="hotels-list">
         <div id="hotel-data">
