@@ -7,9 +7,7 @@ var gulp = require('gulp'),
 		sass = require('gulp-sass'),
 		sassLint = require('gulp-sass-lint'),
 		fs = require('fs'),
-    jshint = require('gulp-jshint'),
-    sourcemaps = require('gulp-sourcemaps');
-    
+    jshint = require('gulp-jshint');;
 
 var dir = './public/',
 		dir_css = dir+'css/',
@@ -35,6 +33,12 @@ fs.lstat(dir_css, (err) => {
 gulp.task('sasslint', function () {
   return gulp.src(dir_sass+'**/*.s+(a|c)ss')
     .pipe(sassLint({
+			/*rules: {
+				'class-name-format': {
+          'allow-leading-underscore': false,
+          'convention': 'camelcase'
+        }
+			},*/
       configFile: './sass-lint.yml'
 		}))
     .pipe(sassLint.format())
@@ -49,9 +53,7 @@ gulp.task('lint', function() {
  
 gulp.task('sass', ['sasslint'], function () {
   return gulp.src(dir_sass+'*.s+(a|c)ss')
-    .pipe(sourcemaps.init())
-    .pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError))
-    .pipe(sourcemaps.write("./maps", {includeContent: false}))
+    .pipe(sass().on('error', sass.logError))
     .pipe(gulp.dest(dir_css));
 });
 
